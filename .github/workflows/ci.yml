@@ -44,6 +44,7 @@ jobs:
       - name: Build and check the standalone release
         run: |
           bash scripts/package.sh
+          bash tests/test-bundle.sh
           bash dist/install-morrowind.sh --help
           bash dist/install-morrowind.sh --version
           cd dist

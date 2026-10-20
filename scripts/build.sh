@@ -47,8 +47,12 @@ for file in lib/core.sh lib/steam.sh lib/steam-vdf.awk lib/translation.sh lib/pt
     # shellcheck disable=SC2016
     printf '\nmkdir -p -- "$MES_BUNDLE_TMP/%s"\ncat > "$MES_BUNDLE_TMP/%s" <<\x27MES_EMBEDDED_FILE_EOF\x27\n' "$(dirname -- "$file")" "$file" >> "$target"
     if grep -qx 'MES_EMBEDDED_FILE_EOF' "$root/$file"; then printf 'Heredoc delimiter collision: %s\n' "$file" >&2; exit 1; fi
+    [[ $(tail -c 1 "$root/$file" | od -An -tu1 | tr -d '[:space:]') == 10 ]] || {
+        printf 'Embedded text must end with LF: %s\n' "$file" >&2; exit 1;
+    }
     cat -- "$root/$file" >> "$target"
-    printf '\nMES_EMBEDDED_FILE_EOF\n' >> "$target"
+    # The file already ends with LF. An extra newline would invalidate hashes.
+    printf 'MES_EMBEDDED_FILE_EOF\n' >> "$target"
 done
 {
 cat <<'NATIVE_HEADER'

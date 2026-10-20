@@ -19,6 +19,7 @@ bash tests/test-connect.sh
 bash tests/test-translation.sh
 python3 tests/test-profile.py
 bash scripts/package.sh
+bash tests/test-bundle.sh
 bash dist/install-morrowind.sh --help
 ```
 

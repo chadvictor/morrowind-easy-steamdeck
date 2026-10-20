@@ -26,6 +26,8 @@ reject steam_require_closed
 ps() { return 1; }
 reject steam_require_closed
 ps() { printf 'bash\nkwin_wayland\n'; }
+# Older ShellCheck versions confuse the imported function with the later mock.
+# shellcheck disable=SC2218
 steam_require_closed
 unset -f ps
 ok 'running native/Flatpak Steam and an unavailable process check are refused'

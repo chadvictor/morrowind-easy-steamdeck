@@ -6,6 +6,7 @@
 - The initial controller profile was accepted by that engine, retained all 51 action channels after serialization, and loaded with the native controller UI enabled in a 1280 × 800 engine probe.
 - The player subsequently confirmed that the controller setup worked on Windows on the first attempt.
 - The Flathub manifest inspected for this preview points to the same 0.51.0 source revision and grants host filesystem access.
+- The real Windows `openmw --version` output was checked against the installer gate. The installed `openmw-iniimporter` accepted this installer's arguments and produced 560 fallback entries from the local owned game's INI into a separate temporary file; no game/configuration files were changed by that check.
 - The checked-in automated suites exercise Steam library discovery, VDF editing/restoration, configuration failure paths, native-launch arguments and the exact controller XML contract. Consult the [CI history](https://github.com/chadvictor/morrowind-easy-steamdeck/actions/workflows/ci.yml) for the result at a particular commit.
 
 These are different kinds of evidence. A Windows gamepad success does not prove Steam Deck's Gamescope/Steam Input/Flatpak launch path. A passing mock test does not prove a real Flatpak installation succeeds on every SteamOS image.

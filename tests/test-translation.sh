@@ -114,7 +114,10 @@ ok 'a failed partial download is removed without publishing a cache'
 
 MES_BASE=$TEST_ROOT/extraction-failure
 (
+    # Older ShellCheck cannot trace these calls through mes_ptbr_fetch.
+    # shellcheck disable=SC2317
     bsdtar() { return 2; }
+    # shellcheck disable=SC2317
     unzip() { return 2; }
     reject mes_ptbr_fetch
 )

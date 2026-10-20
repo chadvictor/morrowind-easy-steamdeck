@@ -6,6 +6,7 @@ root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
 temp=$(mktemp -d)
 trap 'rm -rf -- "$temp"' EXIT
 export MES_LIB_DIR="$root/lib" MES_SOURCE="$root/dist/install-morrowind.sh"
+# shellcheck source=../src/main.sh
 source "$root/src/main.sh" --help >/dev/null
 MES_BASE="$temp/owned setup"
 fixture_steam="$temp/Steam"

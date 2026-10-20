@@ -4,6 +4,7 @@
 # shellcheck disable=SC2329
 set -euo pipefail
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
+# shellcheck source=../lib/steam.sh
 source "$SCRIPT_DIR/../lib/steam.sh"
 TEST_BASE=$(realpath -e -- "${TMPDIR:-/tmp}")
 TEST_ROOT=$(mktemp -d "$TEST_BASE/mes-steam-tests.XXXXXXXX")

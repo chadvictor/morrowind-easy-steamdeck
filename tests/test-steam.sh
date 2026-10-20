@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: MIT
 # Mocks below are invoked indirectly by the sourced library.
-# shellcheck disable=SC2329
+# Older versions report the same indirect mock calls as SC2317.
+# shellcheck disable=SC2329,SC2317
 set -euo pipefail
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
 # shellcheck source=../lib/steam.sh

@@ -27,7 +27,7 @@ jobs:
         run: python3 tests/test-profile.py
       - name: Build and check the standalone release
         run: |
-          bash scripts/build.sh
+          bash scripts/package.sh
           bash dist/install-morrowind.sh --help
           bash dist/install-morrowind.sh --version
           cd dist

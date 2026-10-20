@@ -12,11 +12,11 @@ bash tests/test-steam.sh
 bash tests/test-core.sh
 bash tests/test-menu.sh
 python3 tests/test-profile.py
-bash scripts/build.sh
+bash scripts/package.sh
 bash dist/install-morrowind.sh --help
 ```
 
-The result is `dist/install-morrowind.sh` and `dist/SHA256SUMS.txt`. GitHub Actions runs the suites on Ubuntu 22.04 and 24.04. This verifies shell/configuration behavior, not the full Steam Deck experience. See the [hardware checklist](docs/validation.md).
+The result is `dist/install-morrowind.sh`, a player tarball and `dist/SHA256SUMS.txt`. GitHub Actions runs the suites on Ubuntu 22.04 and 24.04. This verifies shell/configuration behavior, not the full Steam Deck experience. See the [hardware checklist](docs/validation.md).
 
 ## Layout
 

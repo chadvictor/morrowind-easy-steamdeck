@@ -4,6 +4,8 @@
 source "$MES_LIB_DIR/core.sh"
 # shellcheck source=../lib/steam.sh
 source "$MES_LIB_DIR/steam.sh"
+# shellcheck source=../lib/translation.sh
+source "$MES_LIB_DIR/translation.sh"
 MES_BASE=${XDG_DATA_HOME:-$HOME/.local/share}/morrowind-easy-steamdeck
 export STEAM_VDF_AWK="$MES_LIB_DIR/steam-vdf.awk"
 
@@ -109,7 +111,10 @@ mes_setup_ui() {
     printf 'This Steam Deck preview has not yet been tested on physical Deck hardware.\n\n'
     mes_find_game_ui || return
     local preset=balanced controller=true scale=1.25 font=18 distance=16384 shadows=false water=true encoding=win1252
-    local choice
+    local choice ptbr=false previous
+    if previous=$(mes_active_profile); then
+        if [[ -f $previous/choices.txt ]] && grep -qx 'ptbr=true' "$previous/choices.txt"; then ptbr=true; fi
+    fi
     while :; do
         mes_header
         printf 'Game: %s\n\n' "$MES_GAME"
@@ -120,11 +125,16 @@ mes_setup_ui() {
         printf '  5  View distance        %s units\n' "$distance"
         printf '  6  Shadows              %s\n' "$shadows"
         printf '  7  Shader water         %s\n' "$water"
-        printf '  8  Game text encoding   %s\n\n' "$encoding"
+        printf '  8  Game text encoding   %s\n' "$encoding"
+        printf '  9  Brazilian Portuguese (PT-BR)   %s\n\n' "$ptbr"
         printf '  I  Install / apply this setup\n  B  Back\n\n'
         printf '1280 x 800 · FOV 75 · modern lighting · distant terrain\n'
         printf 'Use the Steam Deck performance menu to choose your FPS limit.\n'
         printf 'Reapplying creates a fresh settings/bindings profile; old profiles and saves remain.\n'
+        if [[ $ptbr == true ]]; then
+            printf 'PT-BR: English GOTY + OpenMW 0.51.0 required. Start a NEW game.\n'
+            printf 'PT-BR saves stay separate. No existing campaign is converted.\n'
+        fi
         mes_ask $'\nChoice [I]: ' || return
         choice=${REPLY:-I}
         case $choice in
@@ -145,13 +155,19 @@ mes_setup_ui() {
             6) if [[ $shadows == true ]]; then shadows=false; else shadows=true; fi;;
             7) if [[ $water == true ]]; then water=false; else water=true; fi;;
             8)
+                if [[ $ptbr == true ]]; then
+                    printf '\nPT-BR uses Windows-1252 for game data. Turn PT-BR off to change this.\n'
+                    mes_pause || return
+                    continue
+                fi
                 printf '\n1) English / Western Europe (win1252)\n2) Central / Eastern Europe (win1250)\n3) Cyrillic (win1251)\n'
                 mes_ask 'Encoding [1]: ' || return
                 case ${REPLY:-1} in 1) encoding=win1252;; 2) encoding=win1250;; 3) encoding=win1251;; esac;;
+            9) if [[ $ptbr == true ]]; then ptbr=false; else ptbr=true; encoding=win1252; fi;;
             i|I)
                 mes_require_game_closed || return
                 mes_install_engine || return
-                mes_create_profile "$MES_GAME" "$preset" "$controller" "$scale" "$font" "$distance" "$shadows" "$water" "$encoding" || return
+                mes_create_profile "$MES_GAME" "$preset" "$controller" "$scale" "$font" "$distance" "$shadows" "$water" "$encoding" "$ptbr" || return
                 if [[ $MES_SOURCE != "$MES_BASE/manage.sh" ]]; then
                     cp -- "$MES_SOURCE" "$MES_BASE/manage.sh" || return
                     chmod 700 "$MES_BASE/manage.sh" || return
@@ -168,12 +184,15 @@ mes_diagnose() {
     printf 'Morrowind Easy Steam Deck %s\n' "$MES_VERSION"
     printf 'System: %s / %s\nInstall directory: %s\n' "$(uname -s)" "$(uname -m)" "$MES_BASE"
     if command -v flatpak >/dev/null; then mes_flatpak info --user "$MES_APP" || true; fi
-    local profile
+    local profile save_group
     if profile=$(mes_active_profile); then
         printf '\nActive profile: %s\n' "$profile"
         cat -- "$profile/choices.txt"
         printf 'Game folder: '; cat -- "$profile/game-path"
-        printf 'Saves: %s/userdata/saves\n' "$MES_BASE"
+        save_group=userdata
+        if [[ -f $profile/save-group ]]; then IFS= read -r save_group < "$profile/save-group"; fi
+        printf 'Saves: %s/%s/saves\n' "$MES_BASE" "$save_group"
+        if [[ -f $profile/ptbr-version ]]; then printf 'PT-BR version: '; cat -- "$profile/ptbr-version"; fi
     else printf '\nNo active profile.\n'; fi
     printf '\nSteam libraries / installed game (read only):\n'
     steam_find_morrowind "$HOME" || true
@@ -198,7 +217,7 @@ mes_main() {
     printf '%s\n' "$$" > "$MES_LOCK/pid"
     while :; do
         mes_header
-        printf '  1  Set up / change graphics and controller options\n'
+        printf '  1  Set up / change graphics, controller and language\n'
         printf '  2  Connect the Steam Play button\n'
         printf '  3  Show manual Steam Launch Options\n'
         printf '  4  Restore previous Steam Launch Options\n'

@@ -5,14 +5,14 @@ body:
     id: release
     attributes:
       label: Installer release
-      placeholder: 0.1.0-preview.1
+      placeholder: 0.2.0-preview.1
     validations:
       required: true
   - type: textarea
     id: system
     attributes:
       label: Your setup
-      description: Deck LCD/OLED, SteamOS version, OpenMW version, internal drive/SD, Steam Input template.
+      description: Deck LCD/OLED, SteamOS version, OpenMW version, internal drive/SD, Steam Input template, PT-BR enabled or disabled.
     validations:
       required: true
   - type: textarea

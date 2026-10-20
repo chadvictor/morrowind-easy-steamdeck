@@ -11,6 +11,7 @@ shellcheck -x -e SC1091 lib/*.sh src/*.sh scripts/*.sh tests/*.sh
 bash tests/test-steam.sh
 bash tests/test-core.sh
 bash tests/test-menu.sh
+bash tests/test-translation.sh
 python3 tests/test-profile.py
 bash scripts/package.sh
 bash dist/install-morrowind.sh --help
@@ -27,11 +28,15 @@ The result is `dist/install-morrowind.sh`, a player tarball and `dist/SHA256SUMS
 | `lib/core.sh` | Flatpak install, presets and isolated profile activation |
 | `lib/steam.sh` | Discovery, signature checks and reversible Steam integration |
 | `lib/steam-vdf.awk` | VDF lexer/parser and surgical edits |
+| `lib/translation.sh`, `lib/ptbr-fallbacks.awk` | Pinned PT-BR download, verification and fallback merging |
+| `assets/ptbr-*.sha256` | Reviewed upstream payload and original-master checksums |
 | `assets/input_v3.xml` | Approved OpenMW 0.51 controller contract |
 | `scripts/build.sh` | Standalone release bundle generation |
 | `tests/` | Synthetic fixtures; no commercial assets |
 
 Please include tests for changes to discovery, escaping, Steam edits, profile activation or save handling. Test real hardware before making performance claims. Do not expand support to a new OpenMW action format by only relaxing the version check; verify the mapping against source and runtime behavior first.
+
+The translation suite downloads the pinned 4.5 MB mod ZIP once. Pass a local copy as its only argument to reuse an existing download; its SHA-256 is still checked. It never needs commercial game files. Updating the translation requires a new archive review, hashes, compatibility contract and tests, not just changing its URL.
 
 ## Releases
 

@@ -23,6 +23,8 @@ jobs:
         run: bash tests/test-core.sh
       - name: Exercise the player connection menu
         run: bash tests/test-menu.sh
+      - name: Verify the real PT-BR package and optional integration
+        run: bash tests/test-translation.sh
       - name: Check the controller contract
         run: python3 tests/test-profile.py
       - name: Build and check the standalone release

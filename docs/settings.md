@@ -29,10 +29,11 @@ The installer leaves OpenMW's frame limiter unlimited and VSync off. Use the Dec
 - **Interface scale:** 1.0×, 1.25× (default), or 1.5×. This changes the whole UI.
 - **Text size:** 16 or 18 (default). OpenMW 0.51 clamps this setting to 12–18; setting it to 24 does not provide a larger native font. Increase UI scale for larger text.
 - **Controller + UI:** enables the gamepad, native controller menus/tooltips, dead zone 0.15 and cursor speed 0.65. Turning it off leaves keyboard/mouse play and the selected graphics/UI sizes.
-- **Encoding:** win1252 for English/Western European editions, win1250 for Central/Eastern European, or win1251 for Cyrillic. This selects interpretation of installed game text; it does not translate the game.
+- **Encoding:** win1252 for English/Western European editions, win1250 for Central/Eastern European, or win1251 for Cyrillic. This option alone does not translate the game. With PT-BR enabled it is fixed to win1252.
+- **Brazilian Portuguese (PT-BR):** optional automatic installation of the verified community translation. Requires the supported English masters and OpenMW 0.51.0. It selects Portuguese UI/text and a separate PT-BR save directory. Start a new campaign; see [translation details](translation.md).
 
 ## Changing settings later
 
-Open the downloaded installer again, or open `~/.local/share/morrowind-easy-steamdeck/manage.sh`. Setup creates a new settings/bindings profile and retains earlier profiles. It preserves the shared save directory and copies existing global/player Lua storage files when present. It does not merge custom graphics overrides or mods into a freshly generated preset.
+Open the downloaded installer again, or open `~/.local/share/morrowind-easy-steamdeck/manage.sh`. Setup creates a new settings/bindings profile and retains earlier profiles. It preserves both language groups' save directories and copies existing global/player Lua storage files when the previous and new profiles use the same language group. It does not merge custom graphics overrides or mods into a freshly generated preset.
 
 For a small adjustment, use OpenMW's in-game options. For advanced manual editing, the `active` file names the folder inside `profiles/` that contains `settings.cfg`, `input_v3.xml` and `openmw.cfg`. Close the game before editing. [OpenMW settings reference](https://openmw.readthedocs.io/en/openmw-0.51.0/reference/modding/settings/).

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0-preview.1
+
+- Add optional automatic Brazilian Portuguese installation from Morrowind PT-BR 0.1.0-beta.2.
+- Verify the pinned ZIP, all 57 extracted files, supported English masters and OpenMW 0.51.0.
+- Recheck translation/master integrity and engine compatibility at launch; reject unreviewed files overriding the translation.
+- Activate the plugin, localization resources, UI language, subtitles and 63 translated fallbacks together.
+- Keep PT-BR saves separate, preserve the original save directory, and remember the language choice on reconfiguration.
+- Disable PT-BR by rerunning setup with option 9 off; no files in the original game or Flatpak application are replaced.
+
+Physical Steam Deck validation remains pending. The community translation requires a new campaign.
+
 ## 0.1.0-preview.1
 
 Initial Steam Deck preview.

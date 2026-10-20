@@ -19,6 +19,8 @@ The profile suite substitutes a fake Flatpak command. It checks engine-version c
 
 No CI test boots a licensed copy of Morrowind or measures GPU performance.
 
+The translation suite verifies the actual pinned upstream ZIP and all 57 files. It exercises network/extraction/checksum failures, cache reuse and modification, all 63 UTF-8 fallback replacements, exact engine compatibility, master mismatches, plugin/data order, isolated save groups, disabling/re-enabling, and changes after setup. Synthetic masters are used for the profile tests; production hashes remain unchanged. No translated campaign is played by CI.
+
 ## Pending physical Steam Deck acceptance
 
 Before calling the Steam Deck release stable, perform and record:
@@ -35,6 +37,8 @@ Before calling the Steam Deck release stable, perform and record:
 - [ ] Trackpad fallback, mode switching and prompts; no duplicate actions from mixed Steam mappings.
 - [ ] UI/text at scale 1.0, 1.25 and 1.5 on 1280 × 800, including long text.
 - [ ] Save, quit, relaunch and load from the same save directory.
+- [ ] Enable PT-BR, start a new game, and inspect accented text, character-class questions, dialogue links, books and level-up messages.
+- [ ] Disable/re-enable PT-BR and confirm that each language shows only its own campaign saves.
 - [ ] Suspend/resume and SD-card removal/remount behavior.
 - [ ] Measure exterior/interior performance and power for all presets; report model, SteamOS and frame limit.
 - [ ] Re-run setup, restore Steam, and confirm original launch behavior remains recoverable.

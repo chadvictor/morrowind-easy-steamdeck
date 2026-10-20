@@ -41,7 +41,13 @@ The Steam button opens Steam; it is not available as the profile's Guide/quicksa
 
 ## Text is too large / a window is cut off
 
-Try scale 1.25 instead of 1.5, or 1.0 if necessary. Font size and interface scale are independent. Restart the game after changing the profile. Long translated text can require more space than English; translations are not installed by this project.
+Try scale 1.25 instead of 1.5, or 1.0 if necessary. Font size and interface scale are independent. Restart the game after changing the profile. Long PT-BR text can require more space than English.
+
+## PT-BR installation stops or my saves seem missing
+
+The optional translation requires the hash-checked **English Steam GOTY** masters and **OpenMW 0.51.0 exactly**. If the files do not match, select English in Steam properties and verify the game files, or leave PT-BR off. Download/checksum failures do not activate the new profile. See [translation recovery](translation.md#disable-or-recover) for a damaged cache.
+
+Original-language and PT-BR saves are deliberately separated. Switch the option back to the language of your campaign to see its saves again. No saves are deleted or converted. Start a new game the first time you enable PT-BR.
 
 ## Download interrupted or version not supported
 
@@ -61,11 +67,11 @@ If you edited Launch Options after connecting, automatic restore stops to avoid 
 
 ## Go back to an earlier graphics profile
 
-Close OpenMW. Inside `profiles/`, find the earlier timestamped folder and inspect its `choices.txt`. The `active` file contains one folder name, without a path. Replace that line with the chosen earlier folder name and save. All profiles use the same `userdata/saves/` directory. Do not use this procedure while the game is running.
+Close OpenMW. Inside `profiles/`, find the earlier timestamped folder and inspect its `choices.txt`. The `active` file contains one folder name, without a path. Replace that line with the chosen earlier folder name and save. Original-language profiles use `userdata/saves/`; PT-BR profiles use `userdata-ptbr/saves/`. Do not use this procedure while the game is running.
 
 ## Remove this setup
 
-First restore Steam's Launch Options. Then, in Dolphin, **back up `userdata/saves/`**, and move the entire `morrowind-easy-steamdeck` directory to a backup location or Trash. Do not delete that directory while Steam still points to its launcher. The Morrowind installation remains in Steam.
+First restore Steam's Launch Options. Then, in Dolphin, **back up `userdata/saves/` and `userdata-ptbr/saves/` if present**, and move the entire `morrowind-easy-steamdeck` directory to a backup location or Trash. Do not delete that directory while Steam still points to its launcher. The Morrowind installation remains in Steam.
 
 OpenMW itself remains installed because you may use it for another setup. You can remove it separately using Discover if you no longer need it. There is no background service or scheduled task to remove.
 

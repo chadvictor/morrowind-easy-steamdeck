@@ -1,0 +1,30 @@
+name: Report a problem
+description: Tell us where setup or gameplay stopped working.
+body:
+  - type: input
+    id: release
+    attributes:
+      label: Installer release
+      placeholder: 0.1.0-preview.1
+    validations:
+      required: true
+  - type: textarea
+    id: system
+    attributes:
+      label: Your setup
+      description: Deck LCD/OLED, SteamOS version, OpenMW version, internal drive/SD, Steam Input template.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+      description: Steps, expected result, actual result, and the exact error if available.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Relevant diagnostic output
+      description: Review folder names before sharing. Do not attach Steam userdata, credentials, saves or game files.
+      render: text

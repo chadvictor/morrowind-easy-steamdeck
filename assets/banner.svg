@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-labelledby="title desc">
+  <title id="title">Morrowind Easy Steam Deck</title>
+  <desc id="desc">Your Steam copy. Native OpenMW. A controller-ready adventure. An original geometric mountain illustration.</desc>
+  <defs>
+    <linearGradient id="sky" x2="1" y2="1"><stop stop-color="#111c28"/><stop offset="1" stop-color="#2a1c25"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#df9b57" stop-opacity=".25"/><stop offset="1" stop-color="#df9b57" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1280" height="420" rx="20" fill="url(#sky)"/>
+  <circle cx="1050" cy="170" r="225" fill="url(#glow)"/>
+  <circle cx="1070" cy="96" r="28" fill="#cfb88a" opacity=".8"/>
+  <path d="M760 345 973 109 1003 134 1030 123 1260 345Z" fill="#54434b"/>
+  <path d="m973 109 30 25 27-11 230 222H1040Z" fill="#302b38"/>
+  <path d="m973 109 30 25 27-11-21 40-19-14-13 36Z" fill="#b98c69"/>
+  <path d="m710 368 152-130 98 130m135 0 106-130 100 130" fill="#1b2630"/>
+  <path d="M0 367c290-34 503 34 744-6 228-37 355 18 536-17v76H0Z" fill="#121a24"/>
+  <g font-family="Segoe UI,Arial,sans-serif">
+    <text x="66" y="74" font-size="14" letter-spacing="4" fill="#d3b27b">RETURN TO VVARDENFELL</text>
+    <text x="62" y="150" font-size="64" font-weight="700" fill="#f4eee5">Morrowind</text>
+    <text x="65" y="207" font-size="40" font-weight="300" fill="#d3b27b">Easy Steam Deck</text>
+    <text x="66" y="258" font-size="20" fill="#b5c1cb">Your Steam copy. Native OpenMW. Ready for a controller.</text>
+    <g font-size="14" fill="#dbe4e9">
+      <rect x="66" y="292" width="150" height="37" rx="18" fill="#2c3b48"/><text x="94" y="316">NO SUDO</text>
+      <rect x="228" y="292" width="168" height="37" rx="18" fill="#2c3b48"/><text x="251" y="316">SSD + SD CARD</text>
+      <rect x="408" y="292" width="183" height="37" rx="18" fill="#2c3b48"/><text x="432" y="316">ONE SHELL FILE</text>
+    </g>
+    <text x="66" y="388" font-size="12" letter-spacing="2" fill="#80919e">COMMUNITY PROJECT · STEAM DECK PREVIEW</text>
+  </g>
+</svg>

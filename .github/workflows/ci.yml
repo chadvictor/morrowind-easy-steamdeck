@@ -1,0 +1,38 @@
+name: Check installer
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check shell syntax and static analysis
+        run: |
+          for script in lib/*.sh src/*.sh scripts/*.sh tests/*.sh; do bash -n "$script"; done
+          shellcheck -x -e SC1091 lib/*.sh src/*.sh scripts/*.sh tests/*.sh
+      - name: Exercise Steam discovery and reversible edits
+        run: bash tests/test-steam.sh
+      - name: Exercise profiles and launcher with a simulated Flatpak
+        run: bash tests/test-core.sh
+      - name: Exercise the player connection menu
+        run: bash tests/test-menu.sh
+      - name: Check the controller contract
+        run: python3 tests/test-profile.py
+      - name: Build and check the standalone release
+        run: |
+          bash scripts/build.sh
+          bash dist/install-morrowind.sh --help
+          bash dist/install-morrowind.sh --version
+          cd dist
+          sha256sum -c SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installer-${{ matrix.os }}
+          path: dist/

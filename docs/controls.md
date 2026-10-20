@@ -1,0 +1,59 @@
+# Controls that fit a controller
+
+The profile uses OpenMW's native SDL gamepad input. Steam Input should present a **standard gamepad** to the engine. A layout that maps both sticks to keyboard/mouse will not use the native controller menus correctly.
+
+## One Steam Input step
+
+In Morrowind's Steam controller settings, enable Steam Input and select **Gamepad with Joystick Trackpad**, if available. A regular gamepad template also works as the starting point: assign the right trackpad to **Mouse** and its click to **Left Mouse Click** for pointer-only screens. Steam's template names can vary with language/client version.
+
+Keep left/right sticks as gamepad joysticks, triggers as analog triggers, and ABXY/D-pad as gamepad buttons. The installer does not overwrite your Steam Input layouts.
+
+## In the world
+
+| Deck / Xbox-style input | Action |
+| --- | --- |
+| Left stick | Move |
+| Right stick | Look |
+| A | Activate / talk / take |
+| B | Inventory / character interface |
+| X | Draw / put away weapon |
+| Y | Jump |
+| RT | Attack or cast, depending on readied mode |
+| LT | Ready magic |
+| LB | Rest / wait |
+| RB | Assign quick keys |
+| View / Back | Journal |
+| Menu / Start | Pause menu |
+| Left stick click | Sneak (hold by default) |
+| Right stick click | First / third person |
+| D-pad up / down | Quick slot 1 / 2 |
+| D-pad left / right | Previous / next weapon |
+
+**Quicksave:** the underlying profile also maps the gamepad Guide button to quicksave, but Steam reserves the Deck's Steam button. Do not rely on that binding on Deck. Optionally assign **L4 → keyboard F5** in Steam Input for quicksave. Save normally from the pause menu as well.
+
+OpenMW's built-in script settings can change sneak to a toggle: check **Options → Scripts → OpenMW Controls**. This installer leaves that preference alone. Morrowind still uses its own mechanics: blocking is automatic, and this does not add Skyrim's sprint, dual wielding or combat system.
+
+## In menus
+
+OpenMW's controller menu layout is native engine functionality, enabled by this profile. It reorganizes the inventory instead of simply moving a mouse pointer around the old desktop layout.
+
+| Input | Typical menu behavior |
+| --- | --- |
+| D-pad | Move focus through entries |
+| A / B | Confirm / go back |
+| LT / RT | Change character-interface tab |
+| LB / RB | Change available filters/categories |
+| Right stick click | Toggle item tooltips where supported |
+| X | Context action shown by the screen (drop, take all, offer, etc.) |
+| Right trackpad | Pointer fallback for screens that need it |
+| Steam + X | Steam keyboard for text entry |
+
+Follow the on-screen prompts; behavior depends on the active screen. Some settings and auxiliary windows still require a pointer. Menu bindings are separate from gameplay bindings in OpenMW, so changing an in-game combat key will not necessarily change its menu equivalent.
+
+## Legibility
+
+The default is **1.25× interface scale + font size 18**. Try **1.5×** if you need larger menus. Larger UI reduces the available space, so check inventory, dialogue and books before committing to a long session. If a window clips at 1.5×, rerun setup at 1.25×.
+
+This is the OpenMW UI with its controller mode and accessibility settings. It does not replace it with Skyrim artwork or a new UI mod. A custom inventory redesign and a remapping screen are future work.
+
+Reference: [OpenMW GUI settings](https://openmw.readthedocs.io/en/openmw-0.51.0/reference/modding/settings/GUI.html), [input settings](https://openmw.readthedocs.io/en/openmw-0.51.0/reference/modding/settings/input.html), and [Valve's gamepad emulation guidance](https://partner.steamgames.com/doc/features/steam_controller/steam_input_gamepad_emulation_bestpractices).

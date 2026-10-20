@@ -1,0 +1,40 @@
+# Contributing
+
+Keep the player workflow small: own the game, run one shell file, choose options, play. Changes should run on stock SteamOS without sudo or extra CLI frameworks. Keep proprietary game data, personal configuration and credentials out of the repository.
+
+## Development checks
+
+On Linux, with Bash, ShellCheck and Python 3 installed for development:
+
+```sh
+shellcheck -x -e SC1091 lib/*.sh src/*.sh scripts/*.sh tests/*.sh
+bash tests/test-steam.sh
+bash tests/test-core.sh
+bash tests/test-menu.sh
+python3 tests/test-profile.py
+bash scripts/build.sh
+bash dist/install-morrowind.sh --help
+```
+
+The result is `dist/install-morrowind.sh` and `dist/SHA256SUMS.txt`. GitHub Actions runs the suites on Ubuntu 22.04 and 24.04. This verifies shell/configuration behavior, not the full Steam Deck experience. See the [hardware checklist](docs/validation.md).
+
+## Layout
+
+| Location | Purpose |
+| --- | --- |
+| `src/main.sh` | Terminal menu and player workflow |
+| `src/launch.sh` | Native launch bridge used by Steam |
+| `lib/core.sh` | Flatpak install, presets and isolated profile activation |
+| `lib/steam.sh` | Discovery, signature checks and reversible Steam integration |
+| `lib/steam-vdf.awk` | VDF lexer/parser and surgical edits |
+| `assets/input_v3.xml` | Approved OpenMW 0.51 controller contract |
+| `scripts/build.sh` | Standalone release bundle generation |
+| `tests/` | Synthetic fixtures; no commercial assets |
+
+Please include tests for changes to discovery, escaping, Steam edits, profile activation or save handling. Test real hardware before making performance claims. Do not expand support to a new OpenMW action format by only relaxing the version check; verify the mapping against source and runtime behavior first.
+
+## Releases
+
+Update the version in `lib/core.sh`, the README example and changelog. Run all checks, build from the exact tagged commit, and attach `install-morrowind.sh`, an executable-preserving tarball and SHA-256 checksums to a GitHub release. Mark releases as prereleases until the physical Steam Deck acceptance checklist has been completed. A prerelease is linked through the Releases page, because GitHub's `/releases/latest` excludes prereleases.
+
+Future priorities: finish real Deck validation, refine presets from measurements, add controller remapping, and assess whether a custom inventory UI improves on the native controller mode. A new UI should be a separately tested feature, not implied by the installer.

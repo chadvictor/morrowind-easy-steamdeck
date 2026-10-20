@@ -130,7 +130,7 @@ mes_connect_ui() {
     MES_FINISH_AFTER_CONNECT=true
     printf '\nAll choices are collected. Now choose Steam > Exit Steam in Desktop Mode.\n'
     printf 'Leave this window open. Waiting up to 3 minutes; no more typing is needed.\n'
-    if ! mes_wait_for_steam_exit; then
+    if ! mes_wait_for_steam_exit 180; then
         mes_error 'Could not confirm that Steam exited within 3 minutes. No connection was written.'
         mes_manual_connection
         mes_finish_connection "$reopen"
@@ -179,7 +179,7 @@ mes_restore_ui() {
     case $REPLY in n|N|no|NO) reopen=false;; esac
     MES_FINISH_AFTER_CONNECT=true
     printf '\nNow choose Steam > Exit Steam. Waiting up to 3 minutes; no more typing is needed.\n'
-    if mes_wait_for_steam_exit; then
+    if mes_wait_for_steam_exit 180; then
         steam_restore_launch_options "$MES_BASE/steam-backup" || rc=$?
         [[ $rc != 0 ]] || printf '\nPrevious Launch Options restored.\n'
     else

@@ -87,11 +87,15 @@ int main(void)
     update();
     CHECK(SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX) == 20000);
     CHECK(SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_A) == SDL_PRESSED);
+    CHECK(SDL_JoystickSetVirtualButton(joystick, SDL_CONTROLLER_BUTTON_A, SDL_RELEASED) == 0);
+    update();
     button(id, SDL_CONTROLLER_BUTTON_BACK, 1);
     button(id, SDL_CONTROLLER_BUTTON_X, 1);
     button(id, SDL_CONTROLLER_BUTTON_X, 0);
     button(id, SDL_CONTROLLER_BUTTON_BACK, 0);
     CHECK(opened == enabled);
+    CHECK(SDL_JoystickSetVirtualButton(joystick, SDL_CONTROLLER_BUTTON_A, SDL_PRESSED) == 0);
+    update();
     CHECK(SDL_JoystickGetAxis(joystick, SDL_CONTROLLER_AXIS_LEFTX) == 20000);
     CHECK(SDL_JoystickGetButton(joystick, SDL_CONTROLLER_BUTTON_A) == SDL_PRESSED);
     CHECK(SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX) == (enabled ? 0 : 20000));

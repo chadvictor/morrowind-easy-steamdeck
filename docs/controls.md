@@ -71,7 +71,7 @@ Profiles created with **0.4.0 or later** and **Controller + UI** enabled include
 
 The layout includes all printable US ASCII characters, Tab, Caps Lock, cursor keys, Home, End and Delete. Shift affects punctuation; Caps affects letters, and Shift temporarily inverts it. Accented letters and IME composition are outside this initial US-layout version.
 
-The keyboard can appear on any screen. It only sends characters or editing keys while the engine reports an active text field; otherwise the header says **Select a text field to type**. Use a trackpad to choose one if necessary. The visual keys are controlled by the gamepad, not touch or mouse clicks. Closing the overlay does not undo characters already typed. If it covers a field near the bottom, close it with B to inspect your text.
+The keyboard can appear on any screen. Release other gamepad buttons before using View + X; a button already held blocks opening until you release it and retry the shortcut. This avoids completing an unintended click in the underlying menu. It only sends characters or editing keys while the engine reports an active text field; otherwise the header says **Select a text field to type**. Use a trackpad to choose one if necessary. The visual keys are controlled by the gamepad, not touch or mouse clicks. Closing the overlay does not undo characters already typed. If it covers a field near the bottom, close it with B to inspect your text.
 
 Gameplay buttons and axes are captured while the keyboard is open. Releasing a button after closing must not activate the underlying menu. Physical keyboard input remains available; Escape closes the overlay. View taps now open the Journal on release, allowing the helper to distinguish a tap from a keyboard/name/exit chord.
 

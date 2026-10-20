@@ -57,7 +57,7 @@ The helper is compiled on Linux against SDL2 headers but dynamically links only 
 
 ### In-game keyboard
 
-View + X toggles the keyboard. The native helper handles navigation, character selection and editing, emitting ordinary SDL text/key events only while SDL reports an active text field. It captures gamepad controls while the panel is open and neutralizes controls already held when opening. Direct controller-state queries are also masked, because OpenMW's Lua action bindings can read axes/buttons without polling events. Closing the panel consumes trailing releases rather than leaking them into gameplay.
+View + X toggles the keyboard. The native helper handles navigation, character selection and editing, emitting ordinary SDL text/key events only while SDL reports an active text field. It captures gamepad controls while the panel is open and neutralizes axes already held when opening. If another button has already been delivered and remains held, opening is refused until it is released and the shortcut retried: synthesizing its release could complete a native UI click. Direct controller-state queries are also masked, because OpenMW's Lua action bindings can read axes/buttons without polling events. Closing the panel consumes trailing releases rather than leaking them into gameplay.
 
 `assets/keyboard/scripts/mes/keyboard.lua` is a MENU script, so it receives events even before a player exists and while a native modal is open. It creates a non-interactive layer above notifications using the engine's own UI templates. The layer does not acquire keyboard focus or intercept mouse clicks. Its labels, selection and Shift/Caps indicators reflect the native helper's state; it never edits engine memory or game widgets.
 

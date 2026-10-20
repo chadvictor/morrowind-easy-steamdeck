@@ -341,19 +341,6 @@ static void neutralize_controls(void)
         if (!controller->used)
             continue;
         controller->swallowed |= controller->buttons;
-        for (value = 0; value < 32; ++value) {
-            if ((controller->forwarded & (UINT32_C(1) << value)) != 0) {
-                SDL_Event event;
-                memset(&event, 0, sizeof(event));
-                event.type = SDL_CONTROLLERBUTTONUP;
-                event.cbutton.timestamp = get_ticks();
-                event.cbutton.which = controller->id;
-                event.cbutton.button = (Uint8)value;
-                event.cbutton.state = SDL_RELEASED;
-                enqueue(&event);
-            }
-        }
-        controller->forwarded = 0;
         for (value = 0; value < SDL_CONTROLLER_AXIS_MAX; ++value) {
             if (controller->forwarded_axes[value] != 0) {
                 SDL_Event event;
@@ -372,6 +359,15 @@ static void neutralize_controls(void)
 
 static void keyboard_show(SDL_JoystickID owner)
 {
+    unsigned i;
+    /*
+     * Releasing a previously forwarded A can finish a native mouse click.
+     * Never synthesize that release: the user must release other buttons and
+     * try View+X again. Physical releases continue normally while closed.
+     */
+    for (i = 0; i < MES_CONTROLLERS; ++i)
+        if (controllers[i].forwarded != 0)
+            return;
     atomic_store_explicit(&published_open, 1, memory_order_release);
     keyboard_owner = owner;
     keyboard_open = 1;

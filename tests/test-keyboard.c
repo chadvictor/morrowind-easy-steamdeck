@@ -161,8 +161,9 @@ static void select_key(unsigned target)
     row = (unsigned)mes_keyboard_keys[selection].row;
     for (i = 0; i < row; ++i)
         tap(11, SDL_CONTROLLER_BUTTON_DPAD_UP);
-    while (selection != 0)
+    for (i = 0; selection != 0 && i < MES_KEYBOARD_KEY_COUNT; ++i)
         tap(11, SDL_CONTROLLER_BUTTON_DPAD_LEFT);
+    CHECK(selection == 0);
     row = (unsigned)mes_keyboard_keys[target].row;
     for (i = 0; i < row; ++i)
         tap(11, SDL_CONTROLLER_BUTTON_DPAD_DOWN);
@@ -542,7 +543,7 @@ static void test_toggle_and_quit_reset(void)
 static void test_neutralization_batch(void)
 {
     SDL_Event event;
-    unsigned device, axis_id, zero_axes = 0, released = 0, states = 0, i;
+    unsigned device, axis_id, zero_axes = 0, states = 0, i;
     reset(1);
     /* Free existing slots, then use all supported devices simultaneously. */
     for (device = 11; device <= 22; device += 11) {
@@ -554,7 +555,6 @@ static void test_neutralization_batch(void)
     }
     clear();
     for (device = 100; device < 116; ++device) {
-        button((SDL_JoystickID)device, SDL_CONTROLLER_BUTTON_A, 1);
         for (axis_id = 0; axis_id < SDL_CONTROLLER_AXIS_MAX; ++axis_id)
             axis((SDL_JoystickID)device, (Uint8)axis_id, 18000);
     }
@@ -568,20 +568,34 @@ static void test_neutralization_batch(void)
         } else if (current->type == SDL_CONTROLLERAXISMOTION) {
             CHECK(current->caxis.value == 0);
             ++zero_axes;
-        } else {
-            CHECK(current->type == SDL_CONTROLLERBUTTONUP
-                && current->cbutton.button == SDL_CONTROLLER_BUTTON_A);
-            ++released;
-        }
+        } else CHECK(0);
     }
-    CHECK(zero_axes == 16 * SDL_CONTROLLER_AXIS_MAX && released == 16 && states >= 1);
+    CHECK(zero_axes == 16 * SDL_CONTROLLER_AXIS_MAX && states >= 1);
     clear();
     tap(100, SDL_CONTROLLER_BUTTON_B);
-    for (device = 100; device < 116; ++device)
-        button((SDL_JoystickID)device, SDL_CONTROLLER_BUTTON_A, 0);
     CHECK(!visible);
     only_snapshots();
-    passed("a 16-controller neutralization batch preserves all zero axes, releases and state snapshots");
+    passed("a 16-controller neutralization batch preserves all zero axes and state snapshots");
+}
+
+static void test_open_refuses_held_buttons(void)
+{
+    reset(1);
+    button(11, SDL_CONTROLLER_BUTTON_A, 1);
+    CHECK(count == 1 && captured[0].type == SDL_CONTROLLERBUTTONDOWN);
+    clear();
+    button(11, SDL_CONTROLLER_BUTTON_BACK, 1);
+    button(11, SDL_CONTROLLER_BUTTON_X, 1);
+    button(11, SDL_CONTROLLER_BUTTON_X, 0);
+    button(11, SDL_CONTROLLER_BUTTON_BACK, 0);
+    CHECK(!visible && count == 0);
+    button(11, SDL_CONTROLLER_BUTTON_A, 0);
+    CHECK(count == 1 && captured[0].type == SDL_CONTROLLERBUTTONUP);
+    CHECK(!visible); /* No delayed surprise open after the release. */
+    clear();
+    open_keyboard(11);
+    only_snapshots();
+    passed("held native buttons refuse opening; their physical releases pass normally and a fresh chord opens");
 }
 
 int main(void)
@@ -606,6 +620,7 @@ int main(void)
     test_held_quit();
     test_snapshot_peek();
     test_toggle_and_quit_reset();
+    test_open_refuses_held_buttons();
     test_neutralization_batch();
     SDL_StopTextInput();
     SDL_DestroyWindow(window);

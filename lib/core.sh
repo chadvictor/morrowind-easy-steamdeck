@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Installer-owned profiles. No shell evaluation of saved paths or configuration.
 MES_APP=org.openmw.OpenMW
-MES_VERSION=0.3.0-preview.1
+MES_VERSION=0.4.0-preview.1
 
 mes_error() { printf '\nError: %s\n' "$*" >&2; return 1; }
 mes_flatpak() { env -u LD_PRELOAD -u LD_LIBRARY_PATH flatpak "$@"; }
@@ -132,6 +132,14 @@ mes_copy_controller_helper() {
     }
     cp -- "$helper" "$stage/libmes-controller-text.so" || return
     printf '%s  libmes-controller-text.so\n' "$expected" > "$stage/controller-helper.sha256" || return
+    local keyboard="$MES_LIB_DIR/../assets/keyboard"
+    (cd -- "$keyboard" && sha256sum --check --status ../keyboard-files.sha256) || {
+        mes_error 'The keyboard interface checksum failed. Download the installer again.'; return 1;
+    }
+    mkdir -p -- "$stage/keyboard/scripts/mes" || return
+    cp -- "$keyboard/mes_keyboard.omwscripts" "$stage/keyboard/" || return
+    cp -- "$keyboard/scripts/mes/keyboard.lua" "$keyboard/scripts/mes/keyboard_layout.lua" "$stage/keyboard/scripts/mes/" || return
+    cp -- "$MES_LIB_DIR/../assets/keyboard-files.sha256" "$stage/keyboard-files.sha256" || return
 }
 
 mes_create_profile() {
@@ -190,6 +198,7 @@ mes_create_profile() {
     if [[ $controller == true ]]; then
         cp -- "$MES_LIB_DIR/../assets/input_v3.xml" "$stage/input_v3.xml" || return
         mes_copy_controller_helper "$stage" || return
+        printf 'content=mes_keyboard.omwscripts\n' >> "$stage/openmw.cfg" || return
     fi
     printf '%s\n' "$game" > "$stage/game-path" || return
     printf '%s\n' "$data" > "$stage/data-path" || return

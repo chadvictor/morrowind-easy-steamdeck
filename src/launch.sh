@@ -71,6 +71,17 @@ if [[ -f $profile/mod-data-path ]]; then
     [[ $version =~ OpenMW[[:space:]]+(version[[:space:]]+)?0\.51\.0([[:space:]]|$) ]] || fail 'This PT-BR release requires OpenMW 0.51.0 exactly. Get an installer with a translation reviewed for the updated engine, or turn PT-BR off for your original-language saves.'
 fi
 engine_command=(--command=openmw org.openmw.OpenMW)
+keyboard_env=()
+if [[ -f $profile/keyboard-files.sha256 ]]; then
+    [[ -f $profile/controller-helper.sha256 ]] || fail 'The keyboard helper is missing. Run setup again.'
+    [[ -d $profile/keyboard && ! -L $profile/keyboard ]] || fail 'The keyboard interface is missing. Run setup again.'
+    unexpected=$(find "$profile/keyboard" ! -type f ! -type d -printf x -quit) || fail 'Cannot check the keyboard interface.'
+    files=$(find "$profile/keyboard" -type f -printf x) || fail 'Cannot check the keyboard interface.'
+    [[ -z $unexpected && ${#files} == 3 ]] || fail 'The keyboard interface changed. Run setup again.'
+    (cd -- "$profile/keyboard" && sha256sum --check --status "$profile/keyboard-files.sha256") || fail 'The keyboard interface checksum failed. Run setup again.'
+    data_args+=("--data=$profile/keyboard")
+    keyboard_env=(--env=MES_VIRTUAL_KEYBOARD=1)
+fi
 if [[ -e $profile/controller-helper.sha256 ]]; then
     [[ -s $profile/libmes-controller-text.so ]] || fail 'The controller helper is missing. Run setup again.'
     read -r expected helper_name < "$profile/controller-helper.sha256" || fail 'Invalid controller helper checksum. Run setup again.'
@@ -90,6 +101,6 @@ rm -f -- "$base/last-launch-error.txt"
 # Steam can pass host library paths unsuitable for Flatpak. Keep Steam Input,
 # display, audio, and Gamescope environment; remove only loader overrides.
 exec env -u LD_PRELOAD -u LD_LIBRARY_PATH flatpak run --user --branch=stable \
-    --env=SDL_GRAB_KEYBOARD=0 "${engine_command[@]}" --replace=config --config="$profile" \
+    --env=SDL_GRAB_KEYBOARD=0 "${keyboard_env[@]}" "${engine_command[@]}" --replace=config --config="$profile" \
     --user-data="$base/$save_group" --data-local="$base/$save_group/data" "${data_args[@]}" \
     > "$base/launch.log" 2>&1

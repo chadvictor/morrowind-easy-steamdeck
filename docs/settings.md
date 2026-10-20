@@ -28,7 +28,7 @@ The installer leaves OpenMW's frame limiter unlimited and VSync off. Use the Dec
 
 - **Interface scale:** 1.0×, 1.25× (default), or 1.5×. This changes the whole UI.
 - **Text size:** 16 or 18 (default). OpenMW 0.51 clamps this setting to 12–18; setting it to 24 does not provide a larger native font. Increase UI scale for larger text.
-- **Controller + UI:** enables the gamepad, native controller menus/tooltips, dead zone 0.15, cursor speed 0.65, **View + Y** name suggestions and a **View + Menu** hold-to-quit shortcut. Turning it off also removes the helper from the new profile, leaving keyboard/mouse play and the selected graphics/UI sizes.
+- **Controller + UI:** enables the gamepad, native controller menus/tooltips, dead zone 0.15, cursor speed 0.65, the **View + X** virtual keyboard, **View + Y** name suggestions and a **View + Menu** hold-to-quit shortcut. Turning it off also removes the helper and keyboard UI from the new profile, leaving keyboard/mouse play and the selected graphics/UI sizes.
 - **Encoding:** win1252 for English/Western European editions, win1250 for Central/Eastern European, or win1251 for Cyrillic. This option alone does not translate the game. With PT-BR enabled it is fixed to win1252.
 - **Brazilian Portuguese (PT-BR):** optional automatic installation of the verified community translation. Requires the supported English masters and OpenMW 0.51.0. It selects Portuguese UI/text and a separate PT-BR save directory. Start a new campaign; see [translation details](translation.md).
 

@@ -10,7 +10,9 @@
 - The real Windows `openmw --version` output was checked against the installer gate. The installed `openmw-iniimporter` accepted this installer's arguments and produced 560 fallback entries from the local owned game's INI into a separate temporary file; no game/configuration files were changed by that check.
 - The checked-in automated suites exercise Steam library discovery, VDF editing/restoration, configuration failure paths, native-launch arguments and the exact controller XML contract. Consult the [CI history](https://github.com/chadvictor/morrowind-easy-steamdeck/actions/workflows/ci.yml) for the result at a particular commit.
 
-These are different kinds of evidence. The Deck report confirms basic launch, input and translation, but not the new 0.3.0 helper or every acceptance item below. A passing mock test does not prove a real Flatpak installation succeeds on every SteamOS image.
+- The 0.4 keyboard UI was rendered in the actual Windows OpenMW 0.51.0 engine over its native character-name modal at 1280 × 800, UI scale 1.25. The 60-key panel remained visible while physical text input filled the native field. This verifies rendering and focus preservation, not the Linux native helper's end-to-end controller operation.
+
+These are different kinds of evidence. The Deck report confirms basic launch, input and translation, but not the new 0.3/0.4 helpers or every acceptance item below. A passing mock test does not prove a real Flatpak installation succeeds on every SteamOS image.
 
 ## Automated coverage
 
@@ -21,6 +23,8 @@ The profile suite substitutes a fake Flatpak command. It checks engine-version c
 No CI test boots a licensed copy of Morrowind or measures GPU performance.
 
 The controller helper is compiled and exercised with **real SDL2**, a dummy video driver and a test-only clock shim on Linux. Tests cover View + Y event ordering, generated UTF-8 text without Enter, same-controller requirements, held-button debouncing, physical modifier preservation, ordinary event passthrough, three-second quit timing, cancellation, focus/device changes and SDL tick wraparound. The launcher suite verifies helper integrity, legacy profiles and literal paths containing spaces/dollar signs. The connection suite checks that every prompt precedes Steam shutdown, both setup and restore finish without Enter, conflicting exit-time settings are preserved, and Steam reopening is requested only after exit.
+
+The keyboard suite checks its toggle chord, gamepad capture, navigation/repeat timing, Shift/Caps, editing, Enter versus Done, multiple controllers, focus/device changes, state heartbeats and trailing releases. LuaJIT tests check the same 60-key layout, non-interactive layers, asynchronous layer creation, selection, case display, watchdog and bounds at four logical viewport sizes. The launcher rejects modified keyboard files before starting OpenMW. These component tests do not replace real Deck testing of each native text dialog.
 
 The translation suite verifies the actual pinned upstream ZIP and all 57 files. It exercises network/extraction/checksum failures, cache reuse and modification, all 63 UTF-8 fallback replacements, exact engine compatibility, master mismatches, plugin/data order, isolated save groups, disabling/re-enabling, and changes after setup. Synthetic masters are used for the profile tests; production hashes remain unchanged. No translated campaign is played by CI.
 
@@ -36,6 +40,9 @@ Before calling the Steam Deck release stable, perform and record:
 - [ ] Game Mode Play button launches native OpenMW and retains Steam overlay/input.
 - [ ] Both sticks, both triggers, ABXY, D-pad, shoulders and stick-clicks respond correctly.
 - [ ] Character creation using View + Y, repeat to reroll, A to accept; ordinary Y still jumps outside text fields.
+- [ ] View + X keyboard: type a custom character name using D-pad/stick + A, edit with X/LB/RB, toggle Shift/Caps, then confirm with its Enter key.
+- [ ] Custom save, class, spell and enchanted-item names; inventory quantity fields; console. Confirm each field is focused and respects its own input restrictions.
+- [ ] Keyboard open outside a text field: no characters or gameplay actions leak; B closes it. Test held sticks/triggers while opening/closing, controller disconnect and suspend/resume.
 - [ ] View + Menu held for 3 seconds exits the name modal; shorter holds, focus loss and disconnect cancel it.
 - [ ] Automatic suggested save description; custom spell/class/save names using the manual shortcut.
 - [ ] Steam + X where supported; record Desktop/Big Picture/Game Mode separately.

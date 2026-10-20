@@ -1,6 +1,6 @@
 # Architecture and evidence
 
-This is an original Bash/awk installer, configuration profile and optional SDL2 input helper. It uses OpenMW's documented configuration and public SDL events for controller text suggestions. Game executables remain unchanged; OpenMW is fetched from Flathub and Morrowind data comes from the player's Steam installation.
+This is an original Bash/awk installer, configuration profile, optional SDL2 input helper and OpenMW Lua keyboard. It uses documented configuration, public SDL2 functions and OpenMW's Lua UI. Game executables remain unchanged; OpenMW is fetched from Flathub and Morrowind data comes from the player's Steam installation.
 
 ## Installation flow
 
@@ -9,7 +9,7 @@ This is an original Bash/awk installer, configuration profile and optional SDL2 
 3. Add Flathub for the current user and install/update `org.openmw.OpenMW//stable` with `flatpak --user`.
 4. Check `openmw --version` against 0.51.x before applying engine-specific bindings.
 5. If PT-BR is selected, require OpenMW 0.51.0 and matching English Steam GOTY master hashes. Download the pinned translation ZIP, verify it before extraction, then verify the exact 57-file payload. Reject extra files and links. Keep it in a separate versioned mod directory.
-6. Run the package's `openmw-iniimporter` on the user's own INI. Retain its fallback values; specify the three official masters and archives explicitly. PT-BR adds its plugin last and replaces 63 fallback values by key, keeping UTF-8 intact.
+6. Run the package's `openmw-iniimporter` on the user's own INI. Retain its fallback values; specify the three official masters and archives explicitly. PT-BR adds its plugin after the masters and replaces 63 fallback values by key, keeping UTF-8 intact. Controller + UI adds the keyboard's MENU script after those content files.
 7. Generate a settings profile, optionally copy the controller mapping, then atomically replace a small `active` pointer file. Failed profile generation leaves the previous pointer intact. Previous profiles remain on disk. PT-BR selects `userdata-ptbr`; the original language uses `userdata`. Lua storage is copied only between consecutive profiles in the same save group.
 8. Optionally change one Steam account's app-22320 `LaunchOptions` with a lexical VDF parser, a full backup, concurrency checks and a guarded restore.
 
@@ -33,6 +33,8 @@ For PT-BR, the launcher adds the mod's `Data Files` as a second `--data` argumen
 
 Controller-enabled profiles additionally contain a checksum-verified `libmes-controller-text.so`. Their Flatpak command is `sh -c` with a fixed script and separate positional arguments: change to the profile directory, set `LD_PRELOAD=./libmes-controller-text.so`, then `exec openmw` with the arguments above. The relative basename is intentional: the dynamic loader splits absolute preload paths containing spaces. The helper is only loaded inside the OpenMW sandbox, not into host Steam or Flatpak. Profiles from earlier releases without the helper manifest continue to use the direct launch command.
 
+New controller profiles also contain three keyboard Lua/content files and their checksum manifest. The launcher verifies the exact payload, adds its directory after the game/translation data, and sets `MES_VIRTUAL_KEYBOARD=1` inside Flatpak. Old profiles without that manifest keep the earlier helper behavior. Neither Lua code nor a new helper is downloaded separately at launch.
+
 The launcher sets `SDL_GRAB_KEYBOARD=0`. New profiles use window mode 1 (borderless fullscreen) and disable minimize-on-focus-loss. These choices permit desktop switching where supported; they do not guarantee Steam's overlay or keyboard.
 
 The profile stores real-case paths because Linux filesystems are case-sensitive. Steam library discovery accepts spaces and quoted VDF paths. Paths containing line breaks/tabs are rejected by discovery instead of being split into unintended records.
@@ -45,7 +47,7 @@ This configuration was first tested with the installed Windows engine, revision 
 
 ### Optional SDL2 helper
 
-`native/controller-text.c` is original MIT-licensed code. It interposes the public `SDL_PollEvent` function and resolves SDL2 functions with `dlsym(RTLD_NEXT)`. It does not use engine addresses, C++ ABI hooks, modified game records or a custom OpenMW build.
+`native/controller-text.c` is original MIT-licensed code. It interposes public SDL2 event/controller functions and resolves SDL2 functions with `dlsym(RTLD_NEXT)`. It does not use engine addresses, C++ ABI hooks, modified game records or a custom OpenMW build.
 
 When SDL reports active text input, View held + a new Y press from the same controller produces a private ordered queue: Ctrl+A to select the field, followed by a bounded ASCII/UTF-8 name. The matching Y release is consumed, unrelated inputs pass through, and Enter is never injected. SDL's physical modifier state is not changed. This is an explicit, generic suggestion command; the helper cannot infer whether the focused field is a name, quantity or console.
 
@@ -53,11 +55,21 @@ A same-controller View + Menu hold produces one `SDL_QUIT` after three seconds, 
 
 The helper is compiled on Linux against SDL2 headers but dynamically links only the system C/dynamic-loading runtime. Its binary and checksum are embedded in the single installer; no player compiler or extra package is required. Each profile gets its own copy, so rollback retains the matching helper. Disabling Controller + UI creates a profile without it.
 
+### In-game keyboard
+
+View + X toggles the keyboard. The native helper handles navigation, character selection and editing, emitting ordinary SDL text/key events only while SDL reports an active text field. It captures gamepad controls while the panel is open and neutralizes controls already held when opening. Direct controller-state queries are also masked, because OpenMW's Lua action bindings can read axes/buttons without polling events. Closing the panel consumes trailing releases rather than leaking them into gameplay.
+
+`assets/keyboard/scripts/mes/keyboard.lua` is a MENU script, so it receives events even before a player exists and while a native modal is open. It creates a non-interactive layer above notifications using the engine's own UI templates. The layer does not acquire keyboard focus or intercept mouse clicks. Its labels, selection and Shift/Caps indicators reflect the native helper's state; it never edits engine memory or game widgets.
+
+The helper sends state through synthetic **key-release-only** events: scancodes 400–459 select one of 60 keys, 499 closes, and GUI/Shift/Ctrl/Alt flags identify the protocol and its state. No key-down event is sent for this protocol, so the engine's input-binding capture cannot learn a protocol key. A one-second heartbeat refreshes the panel; a three-second real-time watchdog closes stale UI even when game time is paused. These events map to no native MyGUI key.
+
+`assets/keyboard-layout.json` is the shared layout source. `scripts/generate-keyboard.py` produces the C and Lua tables and hashes the three runtime files. CI checks that these generated files match. The keyboard is US ASCII QWERTY, with one-shot Shift, Caps Lock, editing/navigation keys, Enter and Done. It does not provide an IME, accented characters, mouse-clickable keys or automatic focus selection. A field covered by the bottom panel can be inspected by closing the keyboard with B.
+
 ## Runtime dependencies
 
 Player side: Bash 4+, awk, GNU coreutils/findutils, grep, procps utilities, Flatpak, and Konsole when opening the shell file graphically. Optional PT-BR downloads use curl and either bsdtar or unzip. These are part of the stock SteamOS desktop environment; no extra terminal UI framework is downloaded. `kdialog` is optional for launcher error popups.
 
-Development tests additionally use Python's standard library, ShellCheck, a C compiler, pkg-config and SDL2 development headers/libraries. GitHub Actions runs the native tests against real SDL2 with a dummy video driver, simulated Steam libraries and a fake Flatpak command. Translation tests download the real upstream mod ZIP but use synthetic game masters; no original game installation is downloaded or required. Building bundles source files and hash metadata into heredocs, plus the native helper encoded as base64, in one executable shell script. Stock SteamOS supplies the base64 decoder. The release requires no checkout and downloads no project helper scripts at runtime.
+Development tests additionally use Python's standard library, LuaJIT, ShellCheck, a C compiler, pkg-config and SDL2 development headers/libraries. GitHub Actions runs the native tests against real SDL2 with a dummy video driver, simulated Steam libraries and a fake Flatpak command. Lua tests use mocked engine APIs; a separate local Windows probe exercises the UI in the actual engine. Translation tests download the real upstream mod ZIP but use synthetic game masters; no original game installation is downloaded or required. Building bundles source files and hash metadata into heredocs, plus the native helper encoded as base64, in one executable shell script. Stock SteamOS supplies the base64 decoder. The release requires no checkout and downloads no project helper scripts at runtime.
 
 ## Sources
 
@@ -67,6 +79,7 @@ Development tests additionally use Python's standard library, ShellCheck, a C co
 - [Configuration manager](https://github.com/OpenMW/openmw/blob/f4bec41444214a7903bebd178389ca22ca13f646/components/files/configurationmanager.cpp) — `config`, `replace`, user data and resource behavior.
 - [INI importer CLI](https://github.com/OpenMW/openmw/blob/f4bec41444214a7903bebd178389ca22ca13f646/apps/mwiniimporter/main.cpp) — importer arguments and its success-code limitation, handled by output validation.
 - [SDL event wrapper](https://github.com/OpenMW/openmw/blob/f4bec41444214a7903bebd178389ca22ca13f646/components/sdlutil/sdlinputwrapper.cpp), [keyboard routing](https://github.com/OpenMW/openmw/blob/f4bec41444214a7903bebd178389ca22ca13f646/apps/openmw/mwinput/keyboardmanager.cpp), [text-input dialog](https://github.com/OpenMW/openmw/blob/f4bec41444214a7903bebd178389ca22ca13f646/apps/openmw/mwgui/textinput.cpp) and [save dialog](https://github.com/OpenMW/openmw/blob/f4bec41444214a7903bebd178389ca22ca13f646/apps/openmw/mwgui/savegamedialog.cpp) — source-backed input, confirmation, save-description and quit behavior.
+- [Lua event dispatch](https://github.com/OpenMW/openmw/blob/f4bec41444214a7903bebd178389ca22ca13f646/apps/openmw/mwlua/luamanagerimp.cpp), [Lua input bindings](https://github.com/OpenMW/openmw/blob/f4bec41444214a7903bebd178389ca22ca13f646/apps/openmw/mwlua/inputbindings.cpp) and [UI layers](https://github.com/OpenMW/openmw/blob/f4bec41444214a7903bebd178389ca22ca13f646/components/lua_ui/layers.cpp) — MENU events during native modals and non-interactive rendering.
 - [SDL keyboard grab](https://wiki.libsdl.org/SDL2/SDL_HINT_GRAB_KEYBOARD) and [Valve's Flatpak overlay issue](https://github.com/ValveSoftware/steam-for-linux/issues/8952) — desktop shortcut and overlay limitations; the helper bypasses keyboard dependence for name suggestions.
 - [Flathub package manifest](https://github.com/flathub/org.openmw.OpenMW/blob/master/org.openmw.OpenMW.yaml) — stable 0.51.0 source, bundled launcher and host filesystem access, inspected 2026-10-19.
 - [Flatpak usage](https://docs.flatpak.org/en/latest/using-flatpak.html) — per-user remote/install/run commands.

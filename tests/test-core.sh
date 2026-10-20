@@ -56,11 +56,14 @@ grep -q '^font size = 18$' "$first/settings.cfg"
 grep -q '^window mode = 1$' "$first/settings.cfg"
 grep -q '^minimize on focus loss = false$' "$first/settings.cfg"
 if grep -q '^config=\|unwanted.esp' "$first/openmw.cfg"; then printf 'FAIL: imported unwanted config\n'; exit 1; fi
-[[ $(grep -c '^content=' "$first/openmw.cfg") == 3 ]]
+[[ $(grep -c '^content=' "$first/openmw.cfg") == 4 ]]
+grep -qx 'content=mes_keyboard.omwscripts' "$first/openmw.cfg"
 # The native helper is scoped to OpenMW inside Flatpak, including paths with spaces.
 bash "$MES_BASE/launch.sh" /untrusted/proton '$(touch INJECTED)'
 grep -qx -- '--command=sh' "$MES_TEST_ARGS"
 grep -qx -- '--env=SDL_GRAB_KEYBOARD=0' "$MES_TEST_ARGS"
+grep -qx -- '--env=MES_VIRTUAL_KEYBOARD=1' "$MES_TEST_ARGS"
+grep -Fxq -- "--data=$first/keyboard" "$MES_TEST_ARGS"
 grep -Fxq -- "$first" "$MES_TEST_ARGS"
 # shellcheck disable=SC2016
 grep -Fxq 'cd -- "$1" || exit; shift; export LD_PRELOAD=./libmes-controller-text.so; exec openmw "$@"' "$MES_TEST_ARGS"
@@ -72,9 +75,17 @@ if bash "$MES_BASE/launch.sh" >/dev/null 2>&1; then printf 'FAIL: accepted corru
 cp "$temp/helper.good" "$first/libmes-controller-text.so"
 # Existing pre-helper profiles retain the direct launch path.
 mv "$first/controller-helper.sha256" "$temp/helper.manifest"
+mv "$first/keyboard-files.sha256" "$temp/keyboard.manifest"
 bash "$MES_BASE/launch.sh"
 grep -qx -- '--command=openmw' "$MES_TEST_ARGS"
 mv "$temp/helper.manifest" "$first/controller-helper.sha256"
+mv "$temp/keyboard.manifest" "$first/keyboard-files.sha256"
+cp "$first/keyboard/scripts/mes/keyboard.lua" "$temp/keyboard.good"
+printf 'broken\n' > "$first/keyboard/scripts/mes/keyboard.lua"
+rm -f "$MES_TEST_ARGS"
+if bash "$MES_BASE/launch.sh" >/dev/null 2>&1; then printf 'FAIL: accepted corrupt keyboard\n'; exit 1; fi
+[[ ! -e $MES_TEST_ARGS ]]
+cp "$temp/keyboard.good" "$first/keyboard/scripts/mes/keyboard.lua"
 printf 'user save\n' > "$MES_BASE/userdata/saves-fixture"
 printf 'preserved Lua preferences\n' > "$first/global_storage.bin"
 export MES_TEST_IMPORT_FAIL=1

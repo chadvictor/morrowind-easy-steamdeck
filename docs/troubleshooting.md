@@ -43,13 +43,17 @@ The Steam button opens Steam; it is not available as the profile's Guide/quicksa
 
 ## Steam + X does not open a keyboard / stuck naming a character
 
-Update with the new installer and **run setup with Controller + UI enabled**; just selecting Connect Steam does not install the helper. Focus the name field, hold **View** (two overlapping rectangles), and tap **Y**. Press A to confirm the suggested name. Repeat the shortcut to roll another. The save dialog already supplies a description in controller-menu mode. See [Names without the Steam keyboard](controls.md#names-without-the-steam-keyboard).
+Update with the new installer and **run setup with Controller + UI enabled**; just selecting Connect Steam does not install the helper. Focus the name field, hold **View** (two overlapping rectangles), and tap **X** to open the in-game keyboard. Navigate with the D-pad/left stick and press A to type. X erases, Y toggles Shift, B closes, and the on-screen Enter key confirms. See [the full keyboard controls](controls.md).
+
+For a quick suggested name instead, hold View and tap Y while the keyboard is closed. Press A to confirm; repeat the shortcut to roll another. The save dialog already supplies a description in controller-menu mode.
 
 To leave a blocked modal, hold **View + Menu** for **3 seconds**. This exits OpenMW and loses unsaved progress. Both buttons must come from the same controller.
 
-If suggestions do nothing, confirm the Steam Input buttons still send gamepad input. Open **Diagnostics** in the installer and check the controller-helper checksum. After launching, `launch.log` should contain `[MES controller text] ready`. No such line can mean the helper failed to load or the engine no longer uses the expected SDL2 entry point; include that log with a report.
+If the shortcuts do nothing, confirm the Steam Input buttons still send gamepad input. Open **Diagnostics** in the installer and check the controller-helper and keyboard-file checksums. After launching, `launch.log` should contain `[MES controller text] ready`. No such line can mean the helper failed to load or the engine no longer uses the expected SDL2 entry point; include that log with a report. For a panel that fails to appear, also include the active profile's `openmw.log`.
 
-Desktop Mode, desktop Big Picture and SteamOS Game Mode have different overlay paths. A Flatpak game working does not prove its Steam keyboard works. This release bypasses that dependency for suggested names; it does not claim to repair the Steam overlay. [Valve's Flatpak overlay issue](https://github.com/ValveSoftware/steam-for-linux/issues/8952).
+If the panel says to select a text field, close it with B, select the desired field with the controller or trackpad, and reopen it. The keyboard preserves the game's focus; opening it does not choose a field. Its keys are operated by gamepad rather than mouse/touch, and this first version uses US ASCII characters. If it covers a field, close it to inspect what you entered. Done/B close without confirming; Enter uses that dialog's normal confirmation behavior.
+
+Desktop Mode, desktop Big Picture and SteamOS Game Mode have different overlay paths. A Flatpak game working does not prove its Steam keyboard works. The in-game keyboard and suggested names work independently of that overlay. [Valve's Flatpak overlay issue](https://github.com/ValveSoftware/steam-for-linux/issues/8952).
 
 New profiles use borderless fullscreen, do not minimize on focus loss, and disable SDL's keyboard grab so desktop system shortcuts remain available where the compositor supports them.
 

@@ -22,11 +22,21 @@ shared=(-fPIC -shared '-Wl,-z,relro,-z,now' '-Wl,--no-undefined')
     "$root/tests/test-native.c" -o "$out/test-native-clock.so" -ldl
 "$compiler" "${flags[@]}" "${sdl_cflags[@]}" "$root/tests/test-native.c" \
     -o "$out/test-native" "${sdl_libs[@]}"
+"$compiler" "${flags[@]}" "${sdl_cflags[@]}" "$root/tests/test-keyboard.c" \
+    -o "$out/test-keyboard" "${sdl_libs[@]}"
+"$compiler" "${flags[@]}" "${sdl_cflags[@]}" "$root/tests/test-getters.c" \
+    -o "$out/test-getters" "${sdl_libs[@]}"
 # Relative preload paths also exercise the loader contract for paths with spaces.
 (
     cd -- "$out"
-    SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy \
+    MES_VIRTUAL_KEYBOARD=0 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy \
         LD_PRELOAD='./libmes-controller-text.so:./test-native-clock.so' ./test-native
+    MES_VIRTUAL_KEYBOARD=1 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy \
+        LD_PRELOAD='./libmes-controller-text.so:./test-native-clock.so' ./test-keyboard
+    MES_VIRTUAL_KEYBOARD=0 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy \
+        LD_PRELOAD='./libmes-controller-text.so:./test-native-clock.so' ./test-getters
+    MES_VIRTUAL_KEYBOARD=1 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy \
+        LD_PRELOAD='./libmes-controller-text.so:./test-native-clock.so' ./test-getters
 )
 if command -v readelf >/dev/null; then
     if readelf -d "$out/libmes-controller-text.so" | grep -q 'NEEDED.*libSDL'; then

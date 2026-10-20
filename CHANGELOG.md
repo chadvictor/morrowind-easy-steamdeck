@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0-preview.1
+
+- Add an in-game US QWERTY virtual keyboard using OpenMW's native Lua UI templates.
+- Open with View + X; navigate with D-pad/left stick, select with A, erase with X, shift with Y and close with B.
+- Include 60 keys covering printable US ASCII, editing, cursor movement, Caps and explicit Enter/Done actions.
+- Keep the game's original text field focused; ignore text/edit requests when no field is selected.
+- Capture gamepad input while the keyboard is open, neutralize previous movement and guard button releases after closing.
+- Bundle verified Lua UI assets with each profile and load a menu script that also runs in modals and before a game is loaded.
+- Retain 0.3.0 name suggestions, hold-to-quit, existing save directories and the connection flow that needs no typing after Steam exits.
+
+This preview still needs testing on a physical Steam Deck. The keyboard does not require Steam's overlay.
+
 ## 0.3.0-preview.1
 
 - Collect all connection and restore choices while Steam is still running; wait for its exit, apply guarded edits and reopen it by default, without another keypress.

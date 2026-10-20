@@ -217,6 +217,7 @@ mes_setup_ui() {
         printf '1280 x 800 · FOV 75 · modern lighting · distant terrain\n'
         printf 'Use the Steam Deck performance menu to choose your FPS limit.\n'
         if [[ $controller == true ]]; then
+            printf 'Virtual keyboard: hold View + tap X; D-pad/stick moves, A types, B closes.\n'
             printf 'Name fields: hold View + tap Y to suggest a name, then A to confirm.\n'
             printf 'Stuck in a screen? Hold View + Menu for 3 seconds to quit (unsaved progress is lost).\n'
         fi
@@ -288,6 +289,11 @@ mes_diagnose() {
             if (cd -- "$profile" && sha256sum --check --status controller-helper.sha256); then printf 'installed, checksum OK\n'
             else printf 'checksum FAILED; rerun setup\n'; fi
         else printf 'Controller text helper: not enabled in this profile\n'; fi
+        if [[ -f $profile/keyboard-files.sha256 ]]; then
+            printf 'In-game keyboard UI: '
+            if (cd -- "$profile/keyboard" && sha256sum --check --status ../keyboard-files.sha256); then printf 'installed, checksum OK\n'
+            else printf 'checksum FAILED; rerun setup\n'; fi
+        fi
     else printf '\nNo active profile.\n'; fi
     printf '\nSteam libraries / installed game (read only):\n'
     steam_find_morrowind "$HOME" || true

@@ -42,10 +42,10 @@ mkdir -p -- "$MES_BUNDLE_TMP/lib" "$MES_BUNDLE_TMP/assets" "$MES_BUNDLE_TMP/src"
 HEADER
 printf '\n' >> "$target"
 sed 's/^/# /' "$root/LICENSE" >> "$target"
-for file in lib/core.sh lib/steam.sh lib/steam-vdf.awk lib/translation.sh lib/ptbr-fallbacks.awk assets/input_v3.xml assets/ptbr-masters.sha256 assets/ptbr-files.sha256 src/launch.sh src/main.sh; do
+for file in lib/core.sh lib/steam.sh lib/steam-vdf.awk lib/translation.sh lib/ptbr-fallbacks.awk assets/input_v3.xml assets/ptbr-masters.sha256 assets/ptbr-files.sha256 assets/keyboard-files.sha256 assets/keyboard/mes_keyboard.omwscripts assets/keyboard/scripts/mes/keyboard.lua assets/keyboard/scripts/mes/keyboard_layout.lua src/launch.sh src/main.sh; do
     # Keep the generated script's variable literal until the bundle runs.
     # shellcheck disable=SC2016
-    printf '\ncat > "$MES_BUNDLE_TMP/%s" <<\x27MES_EMBEDDED_FILE_EOF\x27\n' "$file" >> "$target"
+    printf '\nmkdir -p -- "$MES_BUNDLE_TMP/%s"\ncat > "$MES_BUNDLE_TMP/%s" <<\x27MES_EMBEDDED_FILE_EOF\x27\n' "$(dirname -- "$file")" "$file" >> "$target"
     if grep -qx 'MES_EMBEDDED_FILE_EOF' "$root/$file"; then printf 'Heredoc delimiter collision: %s\n' "$file" >&2; exit 1; fi
     cat -- "$root/$file" >> "$target"
     printf '\nMES_EMBEDDED_FILE_EOF\n' >> "$target"

@@ -12,7 +12,7 @@
 
 **[Download the installer →](https://github.com/chadvictor/morrowind-easy-steamdeck/releases)** · [Controls](docs/controls.md) · [Settings](docs/settings.md) · [Help & undo](docs/troubleshooting.md)
 
-> **Steam Deck preview:** a player confirmed that OpenMW, controller support and Portuguese text work on a real Deck. That test also exposed a blocked Steam keyboard and a setup step that needed input after closing Steam. This release addresses those problems with controller name suggestions and a revised connection flow. **The new shortcuts still need a physical Deck retest.** [Validation details](docs/validation.md).
+> **Steam Deck preview:** a player confirmed that OpenMW, controller support and Portuguese text work on a real Deck. The reported Steam keyboard problem led to controller name suggestions, a revised setup flow and now an **in-game US QWERTY keyboard**. **The new keyboard and shortcuts still need a physical Deck retest.** [Validation details](docs/validation.md).
 
 ## What you get
 
@@ -20,7 +20,7 @@
 | --- | --- |
 | Your purchased Steam copy | Finds Morrowind on the internal drive or a mounted SD-card Steam library; asks for a folder if needed |
 | Balanced, Battery or Quality | Sets up native OpenMW, modern lighting, distant terrain and practical graphics options |
-| Controller mode | Applies gameplay bindings, native controller menus, name suggestions and a held-button exit shortcut |
+| Controller mode | Applies gameplay bindings, native controller menus, an in-game keyboard, name suggestions and a held-button exit shortcut |
 | Comfortable text | Independent interface scale and text size options for a 1280 × 800 screen |
 | Optional Brazilian Portuguese | Downloads and activates the PT-BR mod, interface language and character-creation/level-up text |
 | Your existing Steam Play button | Connects app **22320**, with a backup and a restore action |
@@ -36,7 +36,7 @@ No administrator password. No Python, pip, Node, Git, dialog or package-manager 
 5. **Choose `1 — Set up`.** Confirm the detected game folder. The defaults enable the controller profile, 1.25× UI scale, 18-point text, and Balanced graphics. Want Brazilian Portuguese? Turn on **`9 — Brazilian Portuguese (PT-BR)`**. It requires the English GOTY files and a new game. Press **I** to install. The first Flatpak download can be several GB; let it finish.
 6. **Connect Steam while Steam is still open.** Select **Connect the Steam Play button**, choose your account, approve the displayed Launch Options and choose whether to reopen Steam afterward. **Only then** follow the instruction to choose **Steam → Exit Steam**. Leave the installer open: it detects the exit, applies the change and reopens Steam by default. No more typing or Enter is needed. Manual connection remains available.
 7. **Set a gamepad layout.** Open Morrowind's controller settings, enable Steam Input and select the **Gamepad with Joystick Trackpad** template, or a gamepad template with the right trackpad assigned to mouse. The sticks must send joystick input, not WASD/mouse emulation. [Full control guide](docs/controls.md).
-8. **Return to Game Mode and press Play on Morrowind.** At the character-name field, **hold View and tap Y** to suggest a name; release and repeat to roll another. Press **A** to accept. View is the small button with two overlapping rectangles, not the STEAM button. Save descriptions are already suggested by OpenMW's controller menus. Use the right trackpad for screens that need a pointer.
+8. **Return to Game Mode and press Play on Morrowind.** At the character-name field, **hold View and tap X** to open the in-game keyboard. Navigate with the D-pad or left stick and press **A** to type. Choose **Enter** to confirm, or **B / Done** to close without confirming. Prefer a random name? **View + Y** suggests one; then **A** accepts. View is the small button with two overlapping rectangles, not the STEAM button. Save descriptions are already suggested by OpenMW's controller menus.
 
 The menu accepts number keys and Enter. During setup you can use a keyboard or the Deck's on-screen keyboard; gameplay uses your controller layout.
 
@@ -49,7 +49,7 @@ The menu accepts number keys and Enter. During setup you can use a keyboard or t
 ```text
   MORROWIND
   EASY STEAM DECK
-  0.3.0-preview.1  |  Native OpenMW · No sudo
+  0.4.0-preview.1  |  Native OpenMW · No sudo
   ------------------------------------------------------------
 
   1  Set up / change graphics, controller and language
@@ -67,6 +67,12 @@ In the setup screen, press **9** to enable **Brazilian Portuguese (PT-BR)**, the
 This release integrates translation **0.1.0-beta.2** with **OpenMW 0.51.0**. Start a **new game**: existing English campaigns are not converted. PT-BR saves have their own folder, separate from your original saves. To turn it off, rerun setup, set option **9** to **false**, and apply. The original language settings return; both sets of saves remain. An existing setup remembers whether PT-BR was enabled.
 
 The translation is a community beta with AI-assisted translation and automated review; it has not had a complete human review or campaign playthrough. Voices and videos are not translated. [Installation details, compatibility and undo](docs/translation.md).
+
+## A keyboard inside the game
+
+**View + X** opens a 60-key US QWERTY layout drawn by OpenMW's own UI, above the current menu. It includes letters, digits, punctuation, Shift, Caps, Tab, Space, Backspace, Delete, cursor movement and Enter. It keeps the selected game field focused and does not open Steam's keyboard.
+
+Use **D-pad / left stick** to move the highlighted key, **A** to type it, **X** to erase, **Y** for one-shot Shift and **LB / RB** to move the text cursor. **B** closes the keyboard; it does not undo characters already entered. The keyboard can open on any screen, but only types when an editable field is selected. A trackpad remains useful for selecting that field. [Keyboard controls and limits](docs/controls.md#in-game-virtual-keyboard).
 
 ## Your copy, your saves, your settings
 

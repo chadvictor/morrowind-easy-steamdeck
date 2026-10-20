@@ -17,8 +17,12 @@ jobs:
       - name: Build and exercise the native controller helper
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libsdl2-dev
+          sudo apt-get install -y build-essential libsdl2-dev luajit
+          python3 scripts/generate-keyboard.py
+          git diff --exit-code -- native/keyboard-layout.h assets/keyboard/scripts/mes/keyboard_layout.lua assets/keyboard-files.sha256
           bash scripts/build-native.sh
+      - name: Check keyboard layout and Lua UI lifecycle
+        run: luajit tests/test-keyboard-ui.lua
       - name: Select the helper for source-tree tests
         run: echo "MES_NATIVE_LIBRARY=$GITHUB_WORKSPACE/dist/libmes-controller-text.so" >> "$GITHUB_ENV"
       - name: Check shell syntax and static analysis

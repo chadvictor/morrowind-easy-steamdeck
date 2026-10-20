@@ -24,6 +24,8 @@ PRODUCTION_PINS=$(sha256sum "$ROOT/assets/ptbr-masters.sha256" "$ROOT/assets/ptb
 mkdir -p "$TEST_ROOT/project/lib" "$TEST_ROOT/project/assets" "$TEST_ROOT/project/src" "$TEST_ROOT/bin"
 cp "$ROOT/lib/core.sh" "$ROOT/lib/steam.sh" "$ROOT/lib/translation.sh" "$ROOT/lib/ptbr-fallbacks.awk" "$TEST_ROOT/project/lib/"
 cp "$ROOT/assets/ptbr-masters.sha256" "$ROOT/assets/ptbr-files.sha256" "$ROOT/assets/input_v3.xml" "$TEST_ROOT/project/assets/"
+cp "$ROOT/assets/keyboard-files.sha256" "$TEST_ROOT/project/assets/"
+cp -R "$ROOT/assets/keyboard" "$TEST_ROOT/project/assets/"
 cp "$ROOT/src/launch.sh" "$TEST_ROOT/project/src/"
 export MES_LIB_DIR="$TEST_ROOT/project/lib"
 export MES_NATIVE_LIBRARY=${MES_NATIVE_LIBRARY:-$ROOT/dist/libmes-controller-text.so}
@@ -234,7 +236,7 @@ equal "$(cat "$portuguese/save-group")" userdata-ptbr
 equal "$(cat "$portuguese/mod-data-path")" "$cache/Data Files"
 grep -qx 'encoding=win1252' "$portuguese/openmw.cfg" || fail 'PT-BR did not force Windows-1252'
 grep -qx 'ptbr=true' "$portuguese/choices.txt" || fail 'PT-BR choice not saved'
-equal "$(grep '^content=' "$portuguese/openmw.cfg")" $'content=Morrowind.esm\ncontent=Tribunal.esm\ncontent=Bloodmoon.esm\ncontent=Morrowind_PTBR.esp'
+equal "$(grep '^content=' "$portuguese/openmw.cfg")" $'content=Morrowind.esm\ncontent=Tribunal.esm\ncontent=Bloodmoon.esm\ncontent=Morrowind_PTBR.esp\ncontent=mes_keyboard.omwscripts'
 equal "$(grep -c '^fallback=' "$portuguese/openmw.cfg")" 64
 equal "$(wc -l < "$portuguese/required-files" | tr -d '[:space:]')" 10
 awk '/^\[/ { section=$0 } /^preferred locales = pt_BR, en$/ { if (section != "[General]") exit 1; found=1 } END { if (!found) exit 1 }' "$portuguese/settings.cfg" || fail 'locale is missing or in the wrong section'
@@ -247,7 +249,7 @@ ok 'enabling PT-BR activates the plugin, resources, locale and fallbacks in a se
 
 # shellcheck disable=SC2016
 bash "$MES_BASE/launch.sh" /untrusted/proton '$(touch NEVER_EXECUTE)' '--data=/untrusted'
-equal "$(grep '^--data=' "$MES_TEST_ARGS")" "--data=$game/Data Files"$'\n'"--data=$cache/Data Files"
+equal "$(grep '^--data=' "$MES_TEST_ARGS")" "--data=$game/Data Files"$'\n'"--data=$cache/Data Files"$'\n'"--data=$portuguese/keyboard"
 grep -Fxq -- "--user-data=$MES_BASE/userdata-ptbr" "$MES_TEST_ARGS" || fail 'PT-BR save path incorrect'
 grep -Fxq -- "--data-local=$MES_BASE/userdata-ptbr/data" "$MES_TEST_ARGS" || fail 'PT-BR local data path incorrect'
 ! grep -q 'untrusted\|NEVER_EXECUTE' "$MES_TEST_ARGS" || fail 'Proton arguments were reused'
@@ -259,9 +261,9 @@ equal "$(cat "$disabled/save-group")" userdata
 [[ ! -e $disabled/mod-data-path && ! -e $disabled/ptbr-version ]] || fail 'translation metadata survived disable'
 ! grep -q 'Morrowind_PTBR\|pt_BR' "$disabled/openmw.cfg" "$disabled/settings.cfg" || fail 'translation still active'
 grep -Fxq 'fallback=Question_1_Question,English question' "$disabled/openmw.cfg" || fail 'original fallback not restored'
-equal "$(grep -c '^content=' "$disabled/openmw.cfg")" 3
+equal "$(grep -c '^content=' "$disabled/openmw.cfg")" 4
 bash "$MES_BASE/launch.sh"
-equal "$(grep '^--data=' "$MES_TEST_ARGS")" "--data=$game/Data Files"
+equal "$(grep '^--data=' "$MES_TEST_ARGS")" "--data=$game/Data Files"$'\n'"--data=$disabled/keyboard"
 grep -Fxq -- "--user-data=$MES_BASE/userdata" "$MES_TEST_ARGS" || fail 'English save path incorrect'
 [[ -s $MES_BASE/userdata/saves/english.omwsave && -s $MES_BASE/userdata-ptbr/saves/portuguese.omwsave ]] || fail 'switching language lost a campaign'
 ok 'disabling restores English configuration and launch arguments while preserving both campaigns'

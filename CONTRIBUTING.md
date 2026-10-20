@@ -4,10 +4,12 @@ Keep the player workflow small: own the game, run one shell file, choose options
 
 ## Development checks
 
-On Linux, with Bash, ShellCheck, Python 3, a C compiler, pkg-config and SDL2 development headers installed for development (Ubuntu packages `build-essential libsdl2-dev`):
+On Linux, with Bash, ShellCheck, Python 3, LuaJIT, a C compiler, pkg-config and SDL2 development headers installed for development (Ubuntu packages `build-essential libsdl2-dev luajit`):
 
 ```sh
 shellcheck -x -e SC1091 lib/*.sh src/*.sh scripts/*.sh tests/*.sh
+python3 scripts/generate-keyboard.py
+luajit tests/test-keyboard-ui.lua
 bash scripts/build-native.sh
 export MES_NATIVE_LIBRARY="$PWD/dist/libmes-controller-text.so"
 bash tests/test-steam.sh
@@ -20,7 +22,7 @@ bash scripts/package.sh
 bash dist/install-morrowind.sh --help
 ```
 
-The result is `dist/install-morrowind.sh`, a player tarball and `dist/SHA256SUMS.txt`. The native build also leaves a `.so` helper and two test-only binaries in `dist/`; do not attach the test binaries to releases. GitHub Actions runs the suites on Ubuntu 22.04 and 24.04. Native tests use real SDL2; Steam/Flatpak integration uses fixtures. See the [hardware checklist](docs/validation.md).
+The result is `dist/install-morrowind.sh`, a player tarball and `dist/SHA256SUMS.txt`. The native build also leaves a `.so` helper and test-only binaries in `dist/`; do not attach the test binaries to releases. GitHub Actions runs the suites on Ubuntu 22.04 and 24.04. Native tests use real SDL2; Steam/Flatpak integration uses fixtures. See the [hardware checklist](docs/validation.md).
 
 ## Layout
 
@@ -34,8 +36,11 @@ The result is `dist/install-morrowind.sh`, a player tarball and `dist/SHA256SUMS
 | `lib/translation.sh`, `lib/ptbr-fallbacks.awk` | Pinned PT-BR download, verification and fallback merging |
 | `assets/ptbr-*.sha256` | Reviewed upstream payload and original-master checksums |
 | `assets/input_v3.xml` | Approved OpenMW 0.51 controller contract |
-| `native/controller-text.c` | Original SDL2 name suggestions and hold-to-quit helper |
-| `scripts/build-native.sh`, `tests/test-native.c` | Linux helper build and SDL integration tests |
+| `native/controller-text.c` | SDL2 keyboard, name suggestions and hold-to-quit helper |
+| `assets/keyboard-layout.json`, `scripts/generate-keyboard.py` | Shared keyboard layout and generated C/Lua tables/checksums |
+| `assets/keyboard/` | Original OpenMW MENU script and keyboard UI |
+| `scripts/build-native.sh`, `tests/test-native.c`, `tests/test-keyboard.c` | Linux helper build and SDL integration tests |
+| `tests/test-keyboard-ui.lua` | UI contract, layout and focus-preservation checks with mocked engine APIs |
 | `scripts/build.sh` | Standalone release bundle generation |
 | `tests/` | Synthetic fixtures; no commercial assets |
 

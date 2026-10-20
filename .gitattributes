@@ -2,3 +2,4 @@
 *.sh text eol=lf
 *.awk text eol=lf
 *.png binary
+*.jpg binary

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="300" viewBox="0 0 1280 300" role="img" aria-labelledby="title desc">
+  <title id="title">Your in-game keyboard, in three moves</title>
+  <desc id="desc">Hold View and tap X. Choose a key with the D-pad or left stick and type with A. Use on-screen Enter to confirm or B to close without confirming.</desc>
+  <rect width="1280" height="300" rx="20" fill="#111e24"/>
+  <g font-family="Segoe UI,Arial,sans-serif">
+    <g fill="#192b31" stroke="#30454a"><rect x="16" y="16" width="408" height="268" rx="13"/><rect x="436" y="16" width="408" height="268" rx="13"/><rect x="856" y="16" width="408" height="268" rx="13"/></g>
+    <g font-size="12" letter-spacing="2" font-weight="600" fill="#87c7ba"><text x="44" y="51">01 / OPEN</text><text x="464" y="51">02 / TYPE</text><text x="884" y="51">03 / FINISH</text></g>
+    <g font-size="25" font-weight="600" fill="#f3eee4"><text x="44" y="90">Hold View. Tap X.</text><text x="464" y="90">Choose. Press A.</text><text x="884" y="90">Confirm or close.</text></g>
+    <rect x="46" y="115" width="120" height="68" rx="12" fill="#0d171d" stroke="#51676b"/>
+    <g stroke="#e8dfca" stroke-width="2.5" fill="none"><rect x="101" y="142" width="27" height="20" rx="2"/><path d="M90 154v-22h28"/></g>
+    <text x="188" y="160" font-size="27" fill="#819b9c">+</text>
+    <circle cx="256" cy="149" r="32" fill="#284860" stroke="#80b7e4" stroke-width="2"/><text x="256" y="160" text-anchor="middle" font-size="30" font-weight="600" fill="#daedff">X</text>
+    <g stroke="#87c7ba" stroke-width="2" fill="#0d171d"><path d="M492 119h22v20h20v22h-20v20h-22v-20h-20v-22h20Z"/><circle cx="575" cy="151" r="23"/><circle cx="575" cy="146" r="11" fill="#355453"/></g>
+    <path d="M616 150h30m-8-8 8 8-8 8" stroke="#819b9c" stroke-width="2" fill="none"/>
+    <circle cx="698" cy="149" r="32" fill="#254737" stroke="#94d4ae" stroke-width="2"/><text x="698" y="160" text-anchor="middle" font-size="30" font-weight="600" fill="#d3f1dd">A</text>
+    <rect x="886" y="118" width="117" height="63" rx="9" fill="#d8b47c"/><text x="944" y="157" text-anchor="middle" font-size="22" font-weight="600" fill="#17272a">Enter</text>
+    <text x="1024" y="158" font-size="17" fill="#819b9c">or</text>
+    <circle cx="1103" cy="149" r="32" fill="#513034" stroke="#df9896" stroke-width="2"/><text x="1103" y="160" text-anchor="middle" font-size="30" font-weight="600" fill="#ffe0df">B</text>
+    <g font-size="17" fill="#bccccc">
+      <text x="44" y="223">View is the overlapping rectangles.</text><text x="44" y="250">Focus the game's text field first.</text>
+      <text x="464" y="223">D-pad or left stick moves the highlight.</text><text x="464" y="250">A types the selected key.</text>
+      <text x="884" y="223">On-screen Enter confirms the dialog.</text><text x="884" y="250">B closes without confirming.</text>
+    </g>
+  </g>
+</svg>

@@ -12,6 +12,7 @@ mkdir -p "$stage/$folder/assets"
 cp "$root/dist/install-morrowind.sh" "$root/LICENSE" "$root/README.md" "$root/CHANGELOG.md" "$root/CONTRIBUTING.md" "$stage/$folder/"
 cp -R "$root/docs" "$stage/$folder/docs"
 cp "$root/assets/banner.svg" "$stage/$folder/assets/banner.svg"
+cp -R "$root/assets/readme" "$stage/$folder/assets/readme"
 chmod 755 "$stage/$folder/install-morrowind.sh"
 archive="morrowind-easy-steamdeck-$MES_VERSION.tar.gz"
 # Stable metadata makes the archive reproducible with GNU tar and gzip.

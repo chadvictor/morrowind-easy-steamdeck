@@ -1,28 +1,61 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="490" viewBox="0 0 1280 490" role="img" aria-labelledby="title desc">
   <title id="title">Morrowind Easy Steam Deck</title>
-  <desc id="desc">Your Steam copy. Native OpenMW. A controller-ready adventure. An original geometric mountain illustration.</desc>
+  <desc id="desc">Return to Vvardenfell, from your couch. An original handheld and volcanic island illustration. Controller menus, an in-game keyboard and optional PT-BR.</desc>
   <defs>
-    <linearGradient id="sky" x2="1" y2="1"><stop stop-color="#111c28"/><stop offset="1" stop-color="#2a1c25"/></linearGradient>
-    <radialGradient id="glow"><stop stop-color="#df9b57" stop-opacity=".25"/><stop offset="1" stop-color="#df9b57" stop-opacity="0"/></radialGradient>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#13252a"/><stop offset=".6" stop-color="#111b23"/><stop offset="1" stop-color="#29242b"/></linearGradient>
+    <linearGradient id="screen" x2="0" y2="1"><stop stop-color="#334e54"/><stop offset="1" stop-color="#c49b72"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#dfb57a" stop-opacity=".22"/><stop offset="1" stop-color="#dfb57a" stop-opacity="0"/></radialGradient>
+    <clipPath id="frame"><rect width="1280" height="490" rx="24"/></clipPath>
+    <clipPath id="display"><rect x="816" y="133" width="286" height="192" rx="9"/></clipPath>
   </defs>
-  <rect width="1280" height="420" rx="20" fill="url(#sky)"/>
-  <circle cx="1050" cy="170" r="225" fill="url(#glow)"/>
-  <circle cx="1070" cy="96" r="28" fill="#cfb88a" opacity=".8"/>
-  <path d="M760 345 973 109 1003 134 1030 123 1260 345Z" fill="#54434b"/>
-  <path d="m973 109 30 25 27-11 230 222H1040Z" fill="#302b38"/>
-  <path d="m973 109 30 25 27-11-21 40-19-14-13 36Z" fill="#b98c69"/>
-  <path d="m710 368 152-130 98 130m135 0 106-130 100 130" fill="#1b2630"/>
-  <path d="M0 367c290-34 503 34 744-6 228-37 355 18 536-17v76H0Z" fill="#121a24"/>
-  <g font-family="Segoe UI,Arial,sans-serif">
-    <text x="66" y="74" font-size="14" letter-spacing="4" fill="#d3b27b">RETURN TO VVARDENFELL</text>
-    <text x="62" y="150" font-size="64" font-weight="700" fill="#f4eee5">Morrowind</text>
-    <text x="65" y="207" font-size="40" font-weight="300" fill="#d3b27b">Easy Steam Deck</text>
-    <text x="66" y="258" font-size="20" fill="#b5c1cb">Your Steam copy. Native OpenMW. Ready for a controller.</text>
-    <g font-size="14" fill="#dbe4e9">
-      <rect x="66" y="292" width="150" height="37" rx="18" fill="#2c3b48"/><text x="94" y="316">NO SUDO</text>
-      <rect x="228" y="292" width="168" height="37" rx="18" fill="#2c3b48"/><text x="251" y="316">SSD + SD CARD</text>
-      <rect x="408" y="292" width="183" height="37" rx="18" fill="#2c3b48"/><text x="432" y="316">ONE SHELL FILE</text>
+  <g clip-path="url(#frame)">
+    <rect width="1280" height="490" fill="url(#bg)"/>
+    <circle cx="1090" cy="205" r="350" fill="url(#glow)"/>
+    <path d="M0 452C260 365 408 471 650 405S1020 428 1280 354v136H0Z" fill="#0b151b"/>
+    <path d="M728 122c70-66 187-80 267-29s154 73 256 22M712 97c86-79 204-83 293-29s155 67 275 26" fill="none" stroke="#87c7ba" stroke-opacity=".10" stroke-width="2"/>
+    <path d="M692 370c118-57 195 31 316-11s196-9 288 12" fill="none" stroke="#d8b47c" stroke-opacity=".18"/>
+    <g font-family="Segoe UI,Arial,sans-serif">
+      <rect x="52" y="45" width="234" height="29" rx="14" fill="#203736"/>
+      <circle cx="69" cy="60" r="4" fill="#87c7ba"/>
+      <text x="82" y="64" font-size="11" font-weight="600" letter-spacing="1.8" fill="#a4d7cb">RETURN TO VVARDENFELL</text>
+      <text x="48" y="164" font-size="76" font-weight="700" letter-spacing="-3" fill="#f3eee4">Morrowind</text>
+      <text x="52" y="218" font-size="37" font-weight="400" letter-spacing="1" fill="#d8b47c">Easy Steam Deck</text>
+      <text x="54" y="282" font-size="27" fill="#f3eee4">A whole world. From your couch.</text>
+      <text x="54" y="318" font-size="19" fill="#aabbbc">Your Steam copy, with the comforts of a handheld.</text>
+      <g font-size="13" font-weight="600" fill="#cfe3de">
+        <rect x="54" y="355" width="170" height="37" rx="9" fill="#203438" stroke="#34514f"/><text x="139" y="379" text-anchor="middle">CONTROLLER MENUS</text>
+        <rect x="235" y="355" width="177" height="37" rx="9" fill="#203438" stroke="#34514f"/><text x="323.5" y="379" text-anchor="middle">IN-GAME KEYBOARD</text>
+        <rect x="423" y="355" width="142" height="37" rx="9" fill="#203438" stroke="#34514f"/><text x="494" y="379" text-anchor="middle">OPTIONAL PT-BR</text>
+      </g>
+      <text x="54" y="451" font-size="12" letter-spacing="2" fill="#79908e">ONE DOWNLOAD</text><circle cx="204" cy="447" r="2" fill="#79908e"/>
+      <text x="220" y="451" font-size="12" letter-spacing="2" fill="#79908e">NO ADMIN PASSWORD</text>
+      <text x="1224" y="451" text-anchor="end" font-size="11" letter-spacing="2" fill="#79908e">COMMUNITY PREVIEW</text>
     </g>
-    <text x="66" y="388" font-size="12" letter-spacing="2" fill="#80919e">COMMUNITY PROJECT · STEAM DECK PREVIEW</text>
+    <!-- Original illustration. The display is artwork, not a gameplay capture. -->
+    <ellipse cx="962" cy="371" rx="267" ry="29" fill="#070e13" opacity=".55"/>
+    <path d="M770 107h377c38 0 69 35 69 80v119c0 36-20 60-48 60-17 0-34-14-45-33H798c-12 19-29 33-47 33-28 0-48-24-48-60V187c0-45 29-80 67-80Z" fill="#172127" stroke="#4c5b5a" stroke-width="3"/>
+    <rect x="804" y="121" width="310" height="216" rx="14" fill="#080f14" stroke="#3c494b"/>
+    <g clip-path="url(#display)">
+      <rect x="816" y="133" width="286" height="192" fill="url(#screen)"/>
+      <circle cx="1059" cy="166" r="18" fill="#eed4a7" opacity=".88"/><circle cx="1029" cy="191" r="7" fill="#d4a780" opacity=".8"/>
+      <path d="m830 284 133-126 21 19 16-10 118 117Z" fill="#6a635e"/><path d="m963 158 21 19 16-10 118 117H995Z" fill="#41464b"/>
+      <path d="m963 158 21 19 16-10-11 31-12-9-18 27Z" fill="#c8a783"/>
+      <path d="M810 292q66-45 128-8t170-13v60H810Z" fill="#263d40"/><path d="M808 311q91-39 172-10t137 5v32H808Z" fill="#12292e"/>
+      <path d="M849 301v-48m-18 6q17-32 36-3Z" stroke="#172c30" stroke-width="5" fill="#29464a"/>
+      <g fill="#e9c891" opacity=".8"><circle cx="892" cy="165" r="1"/><circle cx="846" cy="196" r="1"/><circle cx="1005" cy="146" r="1"/></g>
+    </g>
+    <circle cx="758" cy="176" r="25" fill="#0d151b" stroke="#51615f" stroke-width="2"/><circle cx="758" cy="176" r="15" fill="#263238"/>
+    <path d="M748 220h20v14h14v20h-14v14h-20v-14h-14v-20h14Z" fill="#091217" stroke="#4c5b5a"/>
+    <rect x="735" y="291" width="46" height="36" rx="6" fill="#1f2d32" stroke="#425453"/><rect x="1142" y="291" width="46" height="36" rx="6" fill="#1f2d32" stroke="#425453"/>
+    <circle cx="1163" cy="252" r="24" fill="#0d151b" stroke="#51615f" stroke-width="2"/><circle cx="1163" cy="252" r="15" fill="#263238"/>
+    <g font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="600" text-anchor="middle">
+      <circle cx="1163" cy="149" r="12" fill="#24363a"/><text x="1163" y="153" fill="#e1c778">Y</text>
+      <circle cx="1187" cy="174" r="12" fill="#24363a"/><text x="1187" y="178" fill="#df9896">B</text>
+      <circle cx="1139" cy="174" r="12" fill="#24363a"/><text x="1139" y="178" fill="#93bbdf">X</text>
+      <circle cx="1163" cy="199" r="12" fill="#24363a"/><text x="1163" y="203" fill="#94d4ae">A</text>
+    </g>
+    <g fill="none" stroke="#8ba8a3" stroke-width="1.5"><rect x="786" y="145" width="9" height="7" rx="1"/><path d="M783 149v-7h9"/><path d="M1122 144h8m-8 4h8m-8 4h8"/></g>
+    <rect x="858" y="351" width="202" height="37" rx="18" fill="#d8b47c"/>
+    <text x="959" y="375" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="600" fill="#1a2729">YOUR NEXT ADVENTURE</text>
   </g>
 </svg>

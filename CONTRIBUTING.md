@@ -51,6 +51,6 @@ The translation suite downloads the pinned 4.5 MB mod ZIP once. Pass a local cop
 
 ## Releases
 
-Update the version in `lib/core.sh`, the README example and changelog. Run all checks, build from the exact tagged commit on Ubuntu 22.04 for the older glibc baseline, and attach `install-morrowind.sh`, an executable-preserving tarball and SHA-256 checksums to a GitHub release. Mark releases as prereleases until the physical Steam Deck acceptance checklist has been completed. A prerelease is linked through the Releases page, because GitHub's `/releases/latest` excludes prereleases.
+Update the version in `lib/core.sh`, the README release badge and direct installer links, and the changelog. Run all checks, build from the exact tagged commit on Ubuntu 22.04 for the older glibc baseline, and attach `install-morrowind.sh`, an executable-preserving tarball and SHA-256 checksums to a GitHub release. Mark releases as prereleases until the physical Steam Deck acceptance checklist has been completed. Keep a Releases-page link beside the versioned download, because GitHub's `/releases/latest` excludes prereleases.
 
 Future priorities: finish real Deck validation, refine presets from measurements, add controller remapping, and assess whether a custom inventory UI improves on the native controller mode. A new UI should be a separately tested feature, not implied by the installer.

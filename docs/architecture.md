@@ -1,6 +1,6 @@
 # Architecture and evidence
 
-This is an original Bash/awk installer and configuration profile. It does not patch a game executable, inject input, modify DRM, or redistribute OpenMW/Morrowind binaries. The implementation uses the installed engine's configuration contracts and the corresponding open-source code.
+This is an original Bash/awk installer, configuration profile and optional SDL2 input helper. It uses OpenMW's documented configuration and public SDL events for controller text suggestions. Game executables remain unchanged; OpenMW is fetched from Flathub and Morrowind data comes from the player's Steam installation.
 
 ## Installation flow
 

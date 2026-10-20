@@ -194,7 +194,7 @@ mes_setup_ui() {
     mes_header
     printf 'SET UP YOUR ADVENTURE\n\n'
     printf 'Requires your own Steam Morrowind GOTY installation and an internet connection.\n'
-    printf 'This Steam Deck preview has not yet been tested on physical Deck hardware.\n\n'
+    printf 'Deck launch, controls and PT-BR have a player report; new shortcuts still need retesting.\n\n'
     mes_find_game_ui || return
     local preset=balanced controller=true scale=1.25 font=18 distance=16384 shadows=false water=true encoding=win1252
     local choice ptbr=false previous

@@ -362,7 +362,25 @@ static void test_removed_devices(void)
             event.cdevice.which = 11;
         push(&event);
         event = next();
+        /*
+         * SDL 2.30's GameControllerEventWatcher emits CONTROLLERDEVICEREMOVED
+         * before every JOYDEVICEREMOVED, even for an unopened synthetic ID.
+         * SDL 2.0.20 only did that for an opened controller. Accept this exact
+         * same-device pair, but do not hide unrelated events or a stray quit.
+         */
+        if (kinds[i] == SDL_JOYDEVICEREMOVED
+            && event.type == SDL_CONTROLLERDEVICEREMOVED) {
+            CHECK(event.cdevice.which == 11);
+            event = next();
+        }
+        if (event.type != kinds[i])
+            fprintf(stderr, "Removal event: expected 0x%x, received 0x%x\n",
+                (unsigned)kinds[i], (unsigned)event.type);
         CHECK(event.type == kinds[i]);
+        if (kinds[i] == SDL_JOYDEVICEREMOVED)
+            CHECK(event.jdevice.which == 11);
+        else
+            CHECK(event.cdevice.which == 11);
         ticks(9000);
         empty();
         pass_button(11, SDL_CONTROLLER_BUTTON_Y, 1);

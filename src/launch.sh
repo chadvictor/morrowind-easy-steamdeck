@@ -70,11 +70,26 @@ if [[ -f $profile/mod-data-path ]]; then
         --command=openmw org.openmw.OpenMW --version) || fail 'Cannot check the OpenMW version. Run setup again.'
     [[ $version =~ OpenMW[[:space:]]+(version[[:space:]]+)?0\.51\.0([[:space:]]|$) ]] || fail 'This PT-BR release requires OpenMW 0.51.0 exactly. Get an installer with a translation reviewed for the updated engine, or turn PT-BR off for your original-language saves.'
 fi
+engine_command=(--command=openmw org.openmw.OpenMW)
+if [[ -e $profile/controller-helper.sha256 ]]; then
+    [[ -s $profile/libmes-controller-text.so ]] || fail 'The controller helper is missing. Run setup again.'
+    read -r expected helper_name < "$profile/controller-helper.sha256" || fail 'Invalid controller helper checksum. Run setup again.'
+    [[ $expected =~ ^[0-9a-f]{64}$ && $helper_name == libmes-controller-text.so ]] || fail 'Invalid controller helper checksum. Run setup again.'
+    actual=$(sha256sum < "$profile/libmes-controller-text.so")
+    [[ ${actual%% *} == "$expected" ]] || fail 'The controller helper changed. Run setup again to restore it.'
+    # ld.so splits LD_PRELOAD on spaces, even inside a quoted environment value.
+    # Use a relative basename from the profile, and pass all paths as arguments.
+    # Set the preload inside the sandbox only; never inject it into Flatpak.
+    # shellcheck disable=SC2016
+    engine_command=(--command=sh org.openmw.OpenMW -c
+        'cd -- "$1" || exit; shift; export LD_PRELOAD=./libmes-controller-text.so; exec openmw "$@"'
+        mes-openmw "$profile")
+fi
 mkdir -p -- "$base/$save_group/data"
 rm -f -- "$base/last-launch-error.txt"
 # Steam can pass host library paths unsuitable for Flatpak. Keep Steam Input,
 # display, audio, and Gamescope environment; remove only loader overrides.
 exec env -u LD_PRELOAD -u LD_LIBRARY_PATH flatpak run --user --branch=stable \
-    --command=openmw org.openmw.OpenMW --replace=config --config="$profile" \
+    --env=SDL_GRAB_KEYBOARD=0 "${engine_command[@]}" --replace=config --config="$profile" \
     --user-data="$base/$save_group" --data-local="$base/$save_group/data" "${data_args[@]}" \
     > "$base/launch.log" 2>&1

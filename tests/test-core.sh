@@ -6,6 +6,7 @@ root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
 temp=$(mktemp -d)
 trap 'rm -rf -- "$temp"' EXIT
 export MES_LIB_DIR="$root/lib" STEAM_VDF_AWK="$root/lib/steam-vdf.awk"
+export MES_NATIVE_LIBRARY=${MES_NATIVE_LIBRARY:-$root/dist/libmes-controller-text.so}
 # shellcheck source=../lib/core.sh
 source "$root/lib/core.sh"
 # shellcheck source=../lib/steam.sh
@@ -49,10 +50,31 @@ if MES_TEST_ENGINE_VERSION=0.52.0 mes_check_engine >/dev/null 2>&1; then printf 
 mes_create_profile "$game" balanced true 1.25 18 16384 false true win1252 >/dev/null
 first=$(mes_active_profile)
 [[ -s $first/input_v3.xml ]]
+[[ -s $first/libmes-controller-text.so && -s $first/controller-helper.sha256 ]]
 grep -q '^replace=config$' "$first/openmw.cfg"
 grep -q '^font size = 18$' "$first/settings.cfg"
+grep -q '^window mode = 1$' "$first/settings.cfg"
+grep -q '^minimize on focus loss = false$' "$first/settings.cfg"
 if grep -q '^config=\|unwanted.esp' "$first/openmw.cfg"; then printf 'FAIL: imported unwanted config\n'; exit 1; fi
 [[ $(grep -c '^content=' "$first/openmw.cfg") == 3 ]]
+# The native helper is scoped to OpenMW inside Flatpak, including paths with spaces.
+bash "$MES_BASE/launch.sh" /untrusted/proton '$(touch INJECTED)'
+grep -qx -- '--command=sh' "$MES_TEST_ARGS"
+grep -qx -- '--env=SDL_GRAB_KEYBOARD=0' "$MES_TEST_ARGS"
+grep -Fxq -- "$first" "$MES_TEST_ARGS"
+# shellcheck disable=SC2016
+grep -Fxq 'cd -- "$1" || exit; shift; export LD_PRELOAD=./libmes-controller-text.so; exec openmw "$@"' "$MES_TEST_ARGS"
+cp "$first/libmes-controller-text.so" "$temp/helper.good"
+printf 'corrupted\n' > "$first/libmes-controller-text.so"
+rm -f "$MES_TEST_ARGS"
+if bash "$MES_BASE/launch.sh" >/dev/null 2>&1; then printf 'FAIL: accepted corrupt helper\n'; exit 1; fi
+[[ ! -e $MES_TEST_ARGS ]]
+cp "$temp/helper.good" "$first/libmes-controller-text.so"
+# Existing pre-helper profiles retain the direct launch path.
+mv "$first/controller-helper.sha256" "$temp/helper.manifest"
+bash "$MES_BASE/launch.sh"
+grep -qx -- '--command=openmw' "$MES_TEST_ARGS"
+mv "$temp/helper.manifest" "$first/controller-helper.sha256"
 printf 'user save\n' > "$MES_BASE/userdata/saves-fixture"
 printf 'preserved Lua preferences\n' > "$first/global_storage.bin"
 export MES_TEST_IMPORT_FAIL=1
@@ -64,6 +86,7 @@ export MES_TEST_IMPORT_FAIL=0
 mes_create_profile "$game" battery false 1.0 16 8192 false false win1252 >/dev/null
 second=$(mes_active_profile)
 [[ $first != "$second" && -f $first/openmw.cfg && ! -f $second/input_v3.xml ]]
+[[ ! -e $second/controller-helper.sha256 && ! -e $second/libmes-controller-text.so ]]
 cmp "$first/global_storage.bin" "$second/global_storage.bin"
 grep -q 'user save' "$MES_BASE/userdata/saves-fixture"
 grep -q '^enable controller = false$' "$second/settings.cfg"

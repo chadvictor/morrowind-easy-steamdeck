@@ -26,6 +26,7 @@ cp "$ROOT/lib/core.sh" "$ROOT/lib/steam.sh" "$ROOT/lib/translation.sh" "$ROOT/li
 cp "$ROOT/assets/ptbr-masters.sha256" "$ROOT/assets/ptbr-files.sha256" "$ROOT/assets/input_v3.xml" "$TEST_ROOT/project/assets/"
 cp "$ROOT/src/launch.sh" "$TEST_ROOT/project/src/"
 export MES_LIB_DIR="$TEST_ROOT/project/lib"
+export MES_NATIVE_LIBRARY=${MES_NATIVE_LIBRARY:-$ROOT/dist/libmes-controller-text.so}
 # shellcheck source=../lib/core.sh
 source "$MES_LIB_DIR/core.sh"
 # shellcheck source=../lib/steam.sh

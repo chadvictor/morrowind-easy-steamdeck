@@ -59,9 +59,34 @@ mes_manual_connection() {
     printf '\nA copy is saved at:\n%s/steam-launch-options.txt\n' "$MES_BASE"
 }
 
+mes_wait_for_steam_exit() {
+    local timeout=${1:-180} started=$SECONDS
+    while ! steam_require_closed >/dev/null 2>&1; do
+        (( SECONDS - started < timeout )) || return 1
+        sleep 1 || return
+    done
+}
+
+mes_finish_connection() {
+    local reopen=$1
+    if [[ $reopen == true ]] && steam_require_closed >/dev/null 2>&1; then
+        if command -v steam >/dev/null && command -v nohup >/dev/null; then
+            # Detach from this terminal; Steam restores its on-screen keyboard.
+            nohup steam </dev/null >/dev/null 2>&1 &
+            printf '\nReopening Steam as requested.\n'
+        else
+            printf '\nOpen Steam by tapping its desktop icon. Automatic reopening is unavailable.\n'
+        fi
+    elif [[ $reopen != true ]]; then
+        printf '\nSteam will stay closed. Tap its desktop icon when you are ready.\n'
+    fi
+    printf 'This step is finished. You can close this installer window; no Enter is needed.\n'
+}
+
 mes_connect_ui() {
+    MES_FINISH_AFTER_CONNECT=false
     mes_active_profile >/dev/null || { mes_error 'Run setup first.'; return 1; }
-    local root account row choice old rc
+    local root account row choice old rc old_present=false current current_present=false reopen=true options
     local -a roots=() accounts=()
     while IFS= read -r root; do
         case $root in */.var/app/com.valvesoftware.Steam/*) continue;; esac
@@ -71,11 +96,8 @@ mes_connect_ui() {
         printf '\nNative Steam was not found. Flatpak Steam is not supported by this preview.\n'
         printf 'Use the Steam client supplied with SteamOS.\n'; return 1
     fi
-    if pgrep -x steam >/dev/null || pgrep -x steamwebhelper >/dev/null; then
-        printf '\nSteam is open. Choose Steam > Exit Steam in Desktop Mode.\n'
-        printf 'Then return here and select Connect Steam again. Nothing was changed.\n'
-        mes_manual_connection; return 0
-    fi
+    printf '\nKeep Steam open while choosing the account and options below.\n'
+    printf 'Steam + X stops working when Steam exits. We will collect every answer first.\n'
     root=${roots[0]}
     if ((${#roots[@]} > 1)); then
         for row in "${!roots[@]}"; do printf '  %s) %s\n' "$((row+1))" "${roots[$row]}"; done
@@ -85,7 +107,7 @@ mes_connect_ui() {
         root=${roots[$((choice-1))]}
     fi
     while IFS=$'\t' read -r account row; do [[ -n $account ]] && accounts+=("$account"); done < <(steam_accounts "$root")
-    ((${#accounts[@]})) || { mes_error 'Sign in to Steam once so it creates your account settings, exit Steam, then retry.'; return 1; }
+    ((${#accounts[@]})) || { mes_error 'Sign in to Steam once so it creates your account settings, then retry while Steam stays open.'; return 1; }
     printf '\nSteam: %s\n' "$root"
     printf 'Choose the account whose Morrowind Play button should use OpenMW.\n'
     for row in "${!accounts[@]}"; do printf '  %s) Steam account folder %s\n' "$((row+1))" "${accounts[$row]}"; done
@@ -93,15 +115,79 @@ mes_connect_ui() {
     choice=${REPLY:-1}
     [[ $choice =~ ^[1-9][0-9]{0,3}$ ]] && ((choice <= ${#accounts[@]})) || return 1
     account=${accounts[$((choice-1))]}
-    if old=$(steam_get_launch_options "$root/userdata/$account/config/localconfig.vdf"); then :
+    if old=$(steam_get_launch_options "$root/userdata/$account/config/localconfig.vdf"); then old_present=true
     else rc=$?; [[ $rc == 4 ]] || return "$rc"; old=''; fi
+    options=$(mes_launch_options) || return
     printf '\nCurrent Launch Options: %s\nNew Launch Options: ' "${old:-(empty)}"
-    mes_launch_options
-    mes_ask $'\nApply with a backup? [Y/n]: ' || return
-    case $REPLY in n|N|no|NO) return 0;; esac
-    steam_set_launch_options "$root" "$account" "$(mes_launch_options)" "$MES_BASE/steam-backup" || return
-    printf '\nConnected. Reopen Steam and press Play on Morrowind.\n'
+    printf '%s\n' "$options"
+    mes_ask $'\nApply with a backup? [Y/n/M for manual instructions]: ' || return
+    case $REPLY in n|N|no|NO) return 0;; m|M) mes_manual_connection; return;; esac
+    mes_ask 'Reopen Steam automatically when this step finishes? [Y/n]: ' || return
+    case $REPLY in n|N|no|NO) reopen=false;; esac
+
+    # No stdin reads after this point. This also tells the enclosing setup/menu
+    # to finish without mes_pause, even after a timeout or an unsuccessful write.
+    MES_FINISH_AFTER_CONNECT=true
+    printf '\nAll choices are collected. Now choose Steam > Exit Steam in Desktop Mode.\n'
+    printf 'Leave this window open. Waiting up to 3 minutes; no more typing is needed.\n'
+    if ! mes_wait_for_steam_exit; then
+        mes_error 'Could not confirm that Steam exited within 3 minutes. No connection was written.'
+        mes_manual_connection
+        mes_finish_connection "$reopen"
+        return 1
+    fi
+    # Steam may flush preferences while exiting. Do not overwrite a value that
+    # differs from the one the user reviewed, including absent versus empty.
+    if current=$(steam_get_launch_options "$root/userdata/$account/config/localconfig.vdf"); then current_present=true
+    else
+        rc=$?
+        if [[ $rc != 4 ]]; then
+            mes_error 'Cannot read the closed Steam account settings. No connection was written.'
+            mes_manual_connection
+            mes_finish_connection "$reopen"
+            return "$rc"
+        fi
+        current=''
+    fi
+    if [[ $current_present != "$old_present" || $current != "$old" ]]; then
+        mes_error 'Launch Options changed after the preview. They were left untouched. Run Connect Steam again to review the current value.'
+        mes_manual_connection
+        mes_finish_connection "$reopen"
+        return 1
+    fi
+    if ! steam_set_launch_options "$root" "$account" "$options" "$MES_BASE/steam-backup"; then
+        mes_manual_connection
+        mes_finish_connection "$reopen"
+        return 1
+    fi
+    printf '\nConnected. Press Play on Morrowind in Steam.\n'
     printf 'Set Steam Input to a gamepad template before playing.\n'
+    mes_finish_connection "$reopen"
+}
+
+mes_restore_ui() {
+    MES_FINISH_AFTER_CONNECT=false
+    local reopen=true rc=0
+    [[ -s $MES_BASE/steam-backup/status && -f $MES_BASE/steam-backup/before-options ]] || {
+        mes_error 'No automatic connection backup was found. Use Steam Properties to undo a manual connection.'; return 1;
+    }
+    printf '\nKeep Steam open for these choices. Restore the backed-up Morrowind Launch Options:\n'
+    cat -- "$MES_BASE/steam-backup/before-options"
+    mes_ask $'\nRestore? [Y/n]: ' || return
+    case $REPLY in n|N|no|NO) return 0;; esac
+    mes_ask 'Reopen Steam automatically when this step finishes? [Y/n]: ' || return
+    case $REPLY in n|N|no|NO) reopen=false;; esac
+    MES_FINISH_AFTER_CONNECT=true
+    printf '\nNow choose Steam > Exit Steam. Waiting up to 3 minutes; no more typing is needed.\n'
+    if mes_wait_for_steam_exit; then
+        steam_restore_launch_options "$MES_BASE/steam-backup" || rc=$?
+        [[ $rc != 0 ]] || printf '\nPrevious Launch Options restored.\n'
+    else
+        mes_error 'Steam did not exit. No restore was written.'
+        rc=1
+    fi
+    mes_finish_connection "$reopen"
+    return "$rc"
 }
 
 mes_setup_ui() {
@@ -130,6 +216,10 @@ mes_setup_ui() {
         printf '  I  Install / apply this setup\n  B  Back\n\n'
         printf '1280 x 800 · FOV 75 · modern lighting · distant terrain\n'
         printf 'Use the Steam Deck performance menu to choose your FPS limit.\n'
+        if [[ $controller == true ]]; then
+            printf 'Name fields: hold View + tap Y to suggest a name, then A to confirm.\n'
+            printf 'Stuck in a screen? Hold View + Menu for 3 seconds to quit (unsaved progress is lost).\n'
+        fi
         printf 'Reapplying creates a fresh settings/bindings profile; old profiles and saves remain.\n'
         if [[ $ptbr == true ]]; then
             printf 'PT-BR: English GOTY + OpenMW 0.51.0 required. Start a NEW game.\n'
@@ -193,6 +283,11 @@ mes_diagnose() {
         if [[ -f $profile/save-group ]]; then IFS= read -r save_group < "$profile/save-group"; fi
         printf 'Saves: %s/%s/saves\n' "$MES_BASE" "$save_group"
         if [[ -f $profile/ptbr-version ]]; then printf 'PT-BR version: '; cat -- "$profile/ptbr-version"; fi
+        if [[ -f $profile/controller-helper.sha256 ]]; then
+            printf 'Controller text helper: '
+            if (cd -- "$profile" && sha256sum --check --status controller-helper.sha256); then printf 'installed, checksum OK\n'
+            else printf 'checksum FAILED; rerun setup\n'; fi
+        else printf 'Controller text helper: not enabled in this profile\n'; fi
     else printf '\nNo active profile.\n'; fi
     printf '\nSteam libraries / installed game (read only):\n'
     steam_find_morrowind "$HOME" || true
@@ -207,6 +302,7 @@ mes_main() {
         '') ;;
         *) mes_error "Unknown option: $1"; return 1;;
     esac
+    MES_FINISH_AFTER_CONNECT=false
     mes_require_system || return
     mkdir -p -- "$MES_BASE"
     # Atomic directory creation is available on stock SteamOS (no flock dependency).
@@ -226,13 +322,14 @@ mes_main() {
         mes_ask $'\nChoice [1]: ' || return 0
         case ${REPLY:-1} in
             1) mes_setup_ui || printf '\nSetup stopped. Read the message above; you can retry safely.\n';;
-            2) mes_connect_ui || printf '\nSteam connection was not applied.\n';;
+            2) mes_connect_ui || printf '\nSteam connection did not finish. Read the message above.\n';;
             3) mes_manual_connection;;
-            4) steam_restore_launch_options "$MES_BASE/steam-backup" || printf '\nRestore was not applied. Read the message above.\n';;
+            4) mes_restore_ui || printf '\nRestore was not applied. Read the message above.\n';;
             5) mes_diagnose;;
             q|Q) return 0;;
             *) continue;;
         esac
+        [[ ${MES_FINISH_AFTER_CONNECT:-false} != true ]] || return 0
         mes_pause || return 0
     done
 }

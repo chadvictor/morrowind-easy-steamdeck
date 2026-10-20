@@ -18,7 +18,9 @@ Make sure the SD card is mounted in Dolphin. The installer reads Steam's librari
 
 ## Steam is running / automatic connection is refused
 
-Use **Steam → Exit Steam** in Desktop Mode; closing its window may leave it running. Choose **Connect the Steam Play button** again. The installer never stops Steam for you.
+Keep Steam open while choosing **Connect the Steam Play button**, the account, confirmation and reopening option. After the installer says it has collected every choice, use **Steam → Exit Steam** in Desktop Mode; closing its window may leave it running. The installer detects the exit, applies the connection and reopens Steam by default. It never stops Steam for you and never asks for Enter after the exit.
+
+If three minutes pass without detecting an exit, the installer finishes without editing Steam. Reopen it and retry. If Steam saved different Launch Options while exiting, the installer also stops rather than overwriting a value you did not review.
 
 If you prefer a manual connection, use **Show manual Steam Launch Options**. Paste the displayed line into Morrowind **Properties → General → Launch Options**. It is also saved in `~/.local/share/morrowind-easy-steamdeck/steam-launch-options.txt`. Save your old Launch Options yourself before replacing them manually; the automatic restore only tracks edits made by the automatic connector.
 
@@ -38,6 +40,18 @@ The default Flatpak package can access host game folders. If you previously rest
 Select a **gamepad** Steam Input template. Left stick should not send WASD; right stick should not send mouse movement. Enable the controller option in this installer's setup. Keep a trackpad assigned to mouse for menus with limited controller support. If you see doubled input, remove additional keyboard/mouse mappings from gamepad buttons. See [Controls](controls.md).
 
 The Steam button opens Steam; it is not available as the profile's Guide/quicksave button. Optionally map L4 to F5 instead.
+
+## Steam + X does not open a keyboard / stuck naming a character
+
+Update with the new installer and **run setup with Controller + UI enabled**; just selecting Connect Steam does not install the helper. Focus the name field, hold **View** (two overlapping rectangles), and tap **Y**. Press A to confirm the suggested name. Repeat the shortcut to roll another. The save dialog already supplies a description in controller-menu mode. See [Names without the Steam keyboard](controls.md#names-without-the-steam-keyboard).
+
+To leave a blocked modal, hold **View + Menu** for **3 seconds**. This exits OpenMW and loses unsaved progress. Both buttons must come from the same controller.
+
+If suggestions do nothing, confirm the Steam Input buttons still send gamepad input. Open **Diagnostics** in the installer and check the controller-helper checksum. After launching, `launch.log` should contain `[MES controller text] ready`. No such line can mean the helper failed to load or the engine no longer uses the expected SDL2 entry point; include that log with a report.
+
+Desktop Mode, desktop Big Picture and SteamOS Game Mode have different overlay paths. A Flatpak game working does not prove its Steam keyboard works. This release bypasses that dependency for suggested names; it does not claim to repair the Steam overlay. [Valve's Flatpak overlay issue](https://github.com/ValveSoftware/steam-for-linux/issues/8952).
+
+New profiles use borderless fullscreen, do not minimize on focus loss, and disable SDL's keyboard grab so desktop system shortcuts remain available where the compositor supports them.
 
 ## Text is too large / a window is cut off
 
@@ -61,7 +75,7 @@ Download the newer release and run it. Setup updates the per-user OpenMW package
 
 ## Restore Steam's original Play behavior
 
-Close Steam, run the installer, then choose **Restore previous Steam Launch Options**. Reopen Steam afterward. The installer restores the original value (or removes its added value if none existed), preserving unrelated settings.
+Keep Steam open, run the installer and choose **Restore previous Steam Launch Options**. Confirm restoration and the reopening option first; then exit Steam when instructed. The installer waits, restores the original value (or removes its added value if none existed), and reopens Steam by default. No Enter is needed after closing Steam.
 
 If you edited Launch Options after connecting, automatic restore stops to avoid losing your change. Read `steam-backup/before-options` and `steam-backup/before-present` to recover the old value manually through Steam Properties. Keep `steam-backup/localconfig.before` as evidence; do not replace your whole current Steam configuration with that backup unless you deliberately want to undo other changes too.
 

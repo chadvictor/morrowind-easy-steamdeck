@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Installer-owned profiles. No shell evaluation of saved paths or configuration.
 MES_APP=org.openmw.OpenMW
-MES_VERSION=0.2.0-preview.1
+MES_VERSION=0.3.0-preview.1
 
 mes_error() { printf '\nError: %s\n' "$*" >&2; return 1; }
 mes_flatpak() { env -u LD_PRELOAD -u LD_LIBRARY_PATH flatpak "$@"; }
@@ -11,7 +11,7 @@ mes_require_system() {
     [[ $(uname -m) == x86_64 ]] || { mes_error 'This preview supports x86_64 Steam Deck / Linux only.'; return 1; }
     [[ $EUID != 0 ]] || { mes_error 'Run as your normal user. Do not use sudo.'; return 1; }
     local tool
-    for tool in bash awk grep cp mv mkdir mktemp date cat chmod cmp pgrep ps realpath head tail od wc sha256sum dirname basename rm rmdir find flatpak; do
+    for tool in bash awk grep cp mv mkdir mktemp date cat chmod cmp pgrep ps realpath head tail od wc sha256sum dirname basename rm rmdir find flatpak sleep; do
         command -v "$tool" >/dev/null || { mes_error "Missing $tool. Stock SteamOS includes the required tools; see docs/troubleshooting.md."; return 1; }
     done
     [[ $MES_BASE == /* && $MES_BASE != *$'\n'* && $MES_BASE != *$'\r'* ]] || {
@@ -60,7 +60,8 @@ mes_settings() {
 [Video]
 resolution x = 1280
 resolution y = 800
-window mode = 0
+window mode = 1
+minimize on focus loss = false
 vsync mode = 0
 framerate limit = 0
 antialiasing = 0
@@ -119,6 +120,20 @@ mes_active_profile() {
     printf '%s\n' "$MES_BASE/profiles/$id"
 }
 
+mes_copy_controller_helper() {
+    local stage=$1 helper=${MES_NATIVE_LIBRARY:-$MES_LIB_DIR/../assets/libmes-controller-text.so} expected actual
+    [[ -s $helper && -s $helper.sha256 ]] || {
+        mes_error 'The controller helper is missing. Download the complete installer from Releases.'; return 1;
+    }
+    read -r expected _ < "$helper.sha256" || return
+    actual=$(sha256sum < "$helper") || return
+    [[ $expected =~ ^[0-9a-f]{64}$ && ${actual%% *} == "$expected" ]] || {
+        mes_error 'The controller helper checksum failed. Download the installer again.'; return 1;
+    }
+    cp -- "$helper" "$stage/libmes-controller-text.so" || return
+    printf '%s  libmes-controller-text.so\n' "$expected" > "$stage/controller-helper.sha256" || return
+}
+
 mes_create_profile() {
     local game=$1 preset=$2 controller=$3 scale=$4 font=$5 distance=$6 shadows=$7 water=$8 encoding=$9
     local ptbr=${10:-false} id stage previous file data ini stem ext mod='' save_group=userdata previous_group
@@ -174,6 +189,7 @@ mes_create_profile() {
     mes_settings "$preset" "$controller" "$scale" "$font" "$distance" "$shadows" "$water" "$ptbr" > "$stage/settings.cfg" || return
     if [[ $controller == true ]]; then
         cp -- "$MES_LIB_DIR/../assets/input_v3.xml" "$stage/input_v3.xml" || return
+        mes_copy_controller_helper "$stage" || return
     fi
     printf '%s\n' "$game" > "$stage/game-path" || return
     printf '%s\n' "$data" > "$stage/data-path" || return

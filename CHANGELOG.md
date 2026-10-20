@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.0-preview.1
+
+- Collect all connection and restore choices while Steam is still running; wait for its exit, apply guarded edits and reopen it by default, without another keypress.
+- Preserve the last-reviewed Launch Options if Steam flushes a different value during shutdown.
+- Add View + Y name suggestions in focused text fields, using a bundled original SDL2 helper.
+- Add a three-second View + Menu shortcut to request normal engine exit from blocked modals.
+- Keep OpenMW's existing controller-mode save descriptions and document how to use them.
+- Use borderless fullscreen, disable minimize-on-focus-loss and avoid grabbing system keyboard shortcuts.
+- Verify each profile's helper checksum at launch; retain compatibility with earlier profiles.
+
+A player confirmed basic OpenMW/controller/PT-BR operation on a physical Steam Deck and reported the keyboard/setup problems addressed here. The new shortcuts and revised flow still require a Deck retest; Linux automated tests are not a hardware validation.
+
 ## 0.2.0-preview.1
 
 - Add optional automatic Brazilian Portuguese installation from Morrowind PT-BR 0.1.0-beta.2.

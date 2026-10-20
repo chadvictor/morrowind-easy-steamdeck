@@ -12,7 +12,7 @@
 
 **[Download the installer →](https://github.com/chadvictor/morrowind-easy-steamdeck/releases)** · [Controls](docs/controls.md) · [Settings](docs/settings.md) · [Help & undo](docs/troubleshooting.md)
 
-> **Steam Deck preview:** the controller profile was successfully used on Windows with OpenMW 0.51.0. Installer logic is checked with automated fixtures; the complete SteamOS/Flatpak/Game Mode path has **not yet been tested on a physical Steam Deck**. We publish that distinction so you know exactly what to expect. [Validation details](docs/validation.md).
+> **Steam Deck preview:** a player confirmed that OpenMW, controller support and Portuguese text work on a real Deck. That test also exposed a blocked Steam keyboard and a setup step that needed input after closing Steam. This release addresses those problems with controller name suggestions and a revised connection flow. **The new shortcuts still need a physical Deck retest.** [Validation details](docs/validation.md).
 
 ## What you get
 
@@ -20,7 +20,7 @@
 | --- | --- |
 | Your purchased Steam copy | Finds Morrowind on the internal drive or a mounted SD-card Steam library; asks for a folder if needed |
 | Balanced, Battery or Quality | Sets up native OpenMW, modern lighting, distant terrain and practical graphics options |
-| Controller mode | Applies the tested gameplay bindings and OpenMW's native controller-friendly menus |
+| Controller mode | Applies gameplay bindings, native controller menus, name suggestions and a held-button exit shortcut |
 | Comfortable text | Independent interface scale and text size options for a 1280 × 800 screen |
 | Optional Brazilian Portuguese | Downloads and activates the PT-BR mod, interface language and character-creation/level-up text |
 | Your existing Steam Play button | Connects app **22320**, with a backup and a restore action |
@@ -34,18 +34,22 @@ No administrator password. No Python, pip, Node, Git, dialog or package-manager 
 3. **Download `install-morrowind.sh`.** Open the [Releases page](https://github.com/chadvictor/morrowind-easy-steamdeck/releases) and expand **Assets** on the newest preview. Choose the shell file, not GitHub's source-code ZIP.
 4. **Make it executable.** In Dolphin, right-click the downloaded file → **Properties → Permissions → Is executable** (wording can vary). Open it and choose **Execute / Run in Konsole** if prompted. The file opens a terminal menu automatically when launched without one. If Dolphin opens a text editor, use right-click → **Open With → Konsole**, or see the [one-command fallback](docs/troubleshooting.md#the-file-opens-as-text).
 5. **Choose `1 — Set up`.** Confirm the detected game folder. The defaults enable the controller profile, 1.25× UI scale, 18-point text, and Balanced graphics. Want Brazilian Portuguese? Turn on **`9 — Brazilian Portuguese (PT-BR)`**. It requires the English GOTY files and a new game. Press **I** to install. The first Flatpak download can be several GB; let it finish.
-6. **Connect Steam.** For automatic setup, choose **Steam → Exit Steam** in Desktop Mode, then select **Connect the Steam Play button** in this installer. Choose your Steam account and apply the displayed Launch Options. If you prefer, the menu can show the line to paste manually.
-7. **Reopen Steam and set a gamepad layout.** Open Morrowind's controller settings, enable Steam Input and select the **Gamepad with Joystick Trackpad** template, or a gamepad template with the right trackpad assigned to mouse. The sticks must send joystick input, not WASD/mouse emulation. [Full control guide](docs/controls.md).
-8. **Return to Game Mode and press Play on Morrowind.** OpenMW launches directly. Use **Steam + X** when character creation needs a name. Use the right trackpad for any settings screen that still needs a pointer.
+6. **Connect Steam while Steam is still open.** Select **Connect the Steam Play button**, choose your account, approve the displayed Launch Options and choose whether to reopen Steam afterward. **Only then** follow the instruction to choose **Steam → Exit Steam**. Leave the installer open: it detects the exit, applies the change and reopens Steam by default. No more typing or Enter is needed. Manual connection remains available.
+7. **Set a gamepad layout.** Open Morrowind's controller settings, enable Steam Input and select the **Gamepad with Joystick Trackpad** template, or a gamepad template with the right trackpad assigned to mouse. The sticks must send joystick input, not WASD/mouse emulation. [Full control guide](docs/controls.md).
+8. **Return to Game Mode and press Play on Morrowind.** At the character-name field, **hold View and tap Y** to suggest a name; release and repeat to roll another. Press **A** to accept. View is the small button with two overlapping rectangles, not the STEAM button. Save descriptions are already suggested by OpenMW's controller menus. Use the right trackpad for screens that need a pointer.
 
 The menu accepts number keys and Enter. During setup you can use a keyboard or the Deck's on-screen keyboard; gameplay uses your controller layout.
+
+**Already installed?** Download the new shell file, close OpenMW, then choose **1 — Set up** and apply with **Controller + UI** enabled. Just reconnecting Steam does not update the game's profile. Keep PT-BR enabled for a Portuguese campaign; setup remembers that choice and retains your saves.
+
+**Stuck in a modal?** Hold **View + Menu** for **3 seconds** to exit the game. Menu is the small button with three horizontal lines. This does **not** save progress. Prefer the normal pause menu when it is available.
 
 ### The menu
 
 ```text
   MORROWIND
   EASY STEAM DECK
-  0.2.0-preview.1  |  Native OpenMW · No sudo
+  0.3.0-preview.1  |  Native OpenMW · No sudo
   ------------------------------------------------------------
 
   1  Set up / change graphics, controller and language
@@ -94,9 +98,9 @@ The installer sets a Launch Options line like:
 bash "/home/deck/.local/share/morrowind-easy-steamdeck/launch.sh" %command%
 ```
 
-The generated line uses **your actual home directory**. Steam supplies its original Windows/Proton command at `%command%`; our launcher ignores those arguments and starts native Linux OpenMW through Flatpak. You do not need to select a special Proton version or install OpenMW inside a Proton prefix. This mechanism still needs confirmation in Game Mode on a physical Deck.
+The generated line uses **your actual home directory**. Steam supplies its original Windows/Proton command at `%command%`; our launcher ignores those arguments and starts native Linux OpenMW through Flatpak. You do not need to select a special Proton version or install OpenMW inside a Proton prefix. A player confirmed launching on a Deck, but the exact Game Mode path and overlay behavior remain on the acceptance checklist.
 
-Steam must be closed for automatic editing, because it may overwrite its settings while running. Only Morrowind's Launch Options in the selected account are changed. Restore refuses to overwrite a Launch Options value you changed later; all unrelated account/game settings remain intact.
+Steam must be closed for automatic editing, because it may overwrite its settings while running. The installer collects every answer before that point, waits up to three minutes for Steam to exit, then finishes without another keypress. Only Morrowind's Launch Options in the selected account are changed. Restore uses the same flow and refuses to overwrite a Launch Options value you changed later; unrelated account/game settings remain intact.
 
 ## Compatibility
 

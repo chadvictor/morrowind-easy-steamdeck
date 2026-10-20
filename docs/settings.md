@@ -16,7 +16,7 @@ These are **curated starting points**, not measured performance promises or a un
 | Terrain shadows | Off | Off | Off |
 | Multisample antialiasing | Off | Off | Off |
 
-Distance, shadows and shader water can each be overridden in the menu. Choosing another preset resets those three options to its defaults. All other engine settings retain OpenMW's defaults.
+Distance, shadows and shader water can each be overridden in the menu. Choosing another preset resets those three options to its defaults. New profiles use borderless fullscreen and do not minimize on focus loss, making desktop switching less disruptive. Settings not described here retain OpenMW's defaults.
 
 **Why these choices:** OpenMW documents distant terrain and modern shader lighting as supported engine features. Object paging helps render objects beyond active cells. Long view distances, water reflections and shadows all add work, so the default limits distance and leaves shadows off. Battery further reduces visual load; its name does not imply a measured battery-life improvement. [OpenMW defaults at the supported revision](https://github.com/OpenMW/openmw/blob/f4bec41444214a7903bebd178389ca22ca13f646/files/settings-default.cfg) · [Modding-OpenMW distant terrain guide](https://modding-openmw.com/mods/distant-land-and-objects/).
 
@@ -28,7 +28,7 @@ The installer leaves OpenMW's frame limiter unlimited and VSync off. Use the Dec
 
 - **Interface scale:** 1.0×, 1.25× (default), or 1.5×. This changes the whole UI.
 - **Text size:** 16 or 18 (default). OpenMW 0.51 clamps this setting to 12–18; setting it to 24 does not provide a larger native font. Increase UI scale for larger text.
-- **Controller + UI:** enables the gamepad, native controller menus/tooltips, dead zone 0.15 and cursor speed 0.65. Turning it off leaves keyboard/mouse play and the selected graphics/UI sizes.
+- **Controller + UI:** enables the gamepad, native controller menus/tooltips, dead zone 0.15, cursor speed 0.65, **View + Y** name suggestions and a **View + Menu** hold-to-quit shortcut. Turning it off also removes the helper from the new profile, leaving keyboard/mouse play and the selected graphics/UI sizes.
 - **Encoding:** win1252 for English/Western European editions, win1250 for Central/Eastern European, or win1251 for Cyrillic. This option alone does not translate the game. With PT-BR enabled it is fixed to win1252.
 - **Brazilian Portuguese (PT-BR):** optional automatic installation of the verified community translation. Requires the supported English masters and OpenMW 0.51.0. It selects Portuguese UI/text and a separate PT-BR save directory. Start a new campaign; see [translation details](translation.md).
 

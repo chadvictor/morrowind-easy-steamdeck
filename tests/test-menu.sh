@@ -20,11 +20,10 @@ printf '"UserLocalConfigStore" { "Software" { "Valve" { "Steam" { "apps" { "2232
 cp "$config" "$temp/before"
 steam_roots() { printf '%s\n' "$fixture_steam"; }
 ps() { printf 'bash\n'; }
-pgrep() { return 1; }
 # A new account has no LaunchOptions token: this is a normal first-install path.
 # The real sourced function is used here; the setup-only mock is defined later.
 # shellcheck disable=SC2218
-mes_connect_ui <<< $'1\ny' > "$temp/menu.log"
+mes_connect_ui <<< $'1\ny\nn' > "$temp/menu.log"
 [[ $(steam_get_launch_options "$config") == "$(mes_launch_options)" ]]
 grep -q 'Connected' "$temp/menu.log"
 steam_restore_launch_options "$MES_BASE/steam-backup" >/dev/null
@@ -37,14 +36,15 @@ cp "$config" "$temp/before"
 # shellcheck disable=SC2218
 if mes_connect_ui <<< '08' > "$temp/invalid.log" 2>&1; then printf 'FAIL: invalid index accepted\n'; exit 1; fi
 cmp "$config" "$temp/before"
-# If Steam is open, the menu offers manual instructions instead of a write.
-pgrep() { return 0; }
+# Manual instructions remain available while Steam and its keyboard are open.
+ps() { printf 'steam\n'; }
 # shellcheck disable=SC2218
-mes_connect_ui </dev/null > "$temp/open.log"
+mes_connect_ui <<< $'1\nm' > "$temp/open.log"
 cmp "$config" "$temp/before"
-grep -q 'Steam is open' "$temp/open.log"
+grep -q 'Launch Options' "$temp/open.log"
 grep -Fq '%command%' "$MES_BASE/steam-launch-options.txt"
 printf 'PASS: first connection menu, restore, invalid indices and running-Steam manual fallback\n'
+ps() { printf 'bash\n'; }
 
 # Exercise the real setup dialogue through stdin; only its external actions are
 # mocked. The profile mock records the exact positional API and persists the

@@ -4,6 +4,13 @@ set -euo pipefail
 root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
 out="$root/dist"
 mkdir -p -- "$out"
+helper="$out/libmes-controller-text.so"
+[[ -s $helper ]] || { printf 'Build the Linux helper first: bash scripts/build-native.sh\n' >&2; exit 1; }
+# Require a little-endian x86_64 ELF shared library, never a host Windows binary.
+[[ $(od -An -tx1 -N7 "$helper" | tr -d ' \n') == 7f454c46020101 &&
+   $(od -An -tx1 -j16 -N4 "$helper" | tr -d ' \n') == 03003e00 ]] || {
+    printf 'The controller helper must be a Linux x86_64 ELF shared library.\n' >&2; exit 1;
+}
 target="$out/install-morrowind.sh"
 cat > "$target" <<'HEADER'
 #!/usr/bin/env bash
@@ -43,11 +50,25 @@ for file in lib/core.sh lib/steam.sh lib/steam-vdf.awk lib/translation.sh lib/pt
     cat -- "$root/$file" >> "$target"
     printf '\nMES_EMBEDDED_FILE_EOF\n' >> "$target"
 done
-cat >> "$target" <<'FOOTER'
+{
+cat <<'NATIVE_HEADER'
+
+command -v base64 >/dev/null || { printf 'Missing base64 (included with stock SteamOS).\n' >&2; exit 1; }
+base64 --decode > "$MES_BUNDLE_TMP/assets/libmes-controller-text.so" <<'MES_NATIVE_BASE64_EOF'
+NATIVE_HEADER
+base64 "$helper"
+printf '\nMES_NATIVE_BASE64_EOF\n'
+cat <<'NATIVE_SUM_HEADER'
+cat > "$MES_BUNDLE_TMP/assets/libmes-controller-text.so.sha256" <<'MES_NATIVE_SHA_EOF'
+NATIVE_SUM_HEADER
+printf '%s  libmes-controller-text.so\n' "$(sha256sum < "$helper" | awk '{print $1}')"
+printf 'MES_NATIVE_SHA_EOF\n'
+cat <<'FOOTER'
 MES_LIB_DIR="$MES_BUNDLE_TMP/lib"
 # shellcheck source=/dev/null
 source "$MES_BUNDLE_TMP/src/main.sh"
 FOOTER
+} >> "$target"
 chmod +x "$target"
 bash -n "$target"
 (cd -- "$out" && sha256sum install-morrowind.sh > SHA256SUMS.txt)
